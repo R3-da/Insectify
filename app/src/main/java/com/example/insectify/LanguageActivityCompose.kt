@@ -11,10 +11,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.insectify.ui.theme.InsectifyTheme
 
 class LanguageActivityCompose : ComponentActivity() {
@@ -37,10 +39,30 @@ class LanguageActivityCompose : ComponentActivity() {
 @Composable
 fun LanguageLayout() {
     MaterialTheme {
-        Row () {
-            LanguageButton(languageLabel = "English")
-            BottomButton(buttonText = "CONTINUE")
-        }   
+        ConstraintLayout {
+            // Create references for the composables to constrain
+            val (languagebuttons, bottombutton) = createRefs()
+            Column(
+                modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth().fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row (
+                    modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LanguageButton(languageLabel = "English")
+                }
+                Row (
+                    modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LanguageButton(languageLabel = "English")
+                }
+            }
+        }
     }
 }
 
@@ -52,39 +74,30 @@ fun LanguageButton(languageLabel: String) {
             if (isClicked) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
         )
         // Material Components like Button, Card, Switch, etc.
-        Column(
-            modifier = Modifier
-                .background(Color(0xFF7BB661))
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
-
+        Box(
+            Modifier.padding(
+                start = 30.dp,
+                end = 30.dp,
+                top = 20.dp,
+                bottom = 20.dp
+            )
         ) {
-            Box(
-                Modifier.padding(
-                    start = 30.dp,
-                    end = 30.dp,
-                    top = 20.dp,
-                    bottom = 20.dp
-                )
-            ) {
-                Button(
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = surfaceColor,
-                        contentColor = Color.Black),
-                    onClick = {
-                        isClicked = !isClicked
-                    },
-                    modifier = Modifier
-                        .width(200.dp)
-                        .height(60.dp)
+            Button(
+                shape = RoundedCornerShape(15.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = surfaceColor,
+                    contentColor = Color.Black),
+                onClick = {
+                    isClicked = !isClicked
+                },
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(60.dp)
 
-                ) {
-                    // Inner content including an icon and a text label
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "$languageLabel",fontSize = 30.sp)
-                }
+            ) {
+                // Inner content including an icon and a text label
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "$languageLabel",fontSize = 30.sp)
             }
         }
     }
