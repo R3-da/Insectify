@@ -70,11 +70,6 @@ fun MyApp() {
 
                 ) {
                     // Inner content including an icon and a text label
-                    Icon(
-                        Icons.Filled.Favorite,
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "GET STARTED",fontSize = 30.sp)
                 }
