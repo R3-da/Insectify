@@ -66,14 +66,7 @@ fun MyApp() {
                     onClick = {
                         isClicked = !isClicked
                     },
-                    modifier = Modifier.fillMaxWidth().height(60.dp),
-                    // Uses ButtonDefaults.ContentPadding by default
-                    /*contentPadding = PaddingValues(
-                        start = 20.dp,
-                        top = 30.dp,
-                        end = 30.dp,
-                        bottom = 12.dp
-                    )*/
+                    modifier = Modifier.fillMaxWidth().height(60.dp)
 
                 ) {
                     // Inner content including an icon and a text label
