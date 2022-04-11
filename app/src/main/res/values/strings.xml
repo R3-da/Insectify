@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Insectify</string>
     <string name="title_activity_welcome_compose">WelcomeActivityCompose</string>
+    <string name="title_activity_language_compose">LanguageActivityCompose</string>
 </resources>

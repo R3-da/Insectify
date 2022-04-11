@@ -36,13 +36,9 @@ class WelcomeActivityCompose : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
 
 @Composable
-fun MyApp() {
+fun BottomButton(buttonText: String) {
     MaterialTheme {
         var isClicked by remember { mutableStateOf(false) }
         val surfaceColor: Color by animateColorAsState(
@@ -50,13 +46,18 @@ fun MyApp() {
         )
         // Material Components like Button, Card, Switch, etc.
         Column(
-            modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth().fillMaxHeight(),
+            modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
             Box(
-                Modifier.padding(15.dp)
+                Modifier.padding(
+                    start = 30.dp,
+                    end = 30.dp,
+                    top = 20.dp,
+                    bottom = 20.dp
+                )
             ) {
                 Button(
                     shape = RoundedCornerShape(15.dp),
@@ -71,17 +72,22 @@ fun MyApp() {
                 ) {
                     // Inner content including an icon and a text label
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "GET STARTED",fontSize = 30.sp)
+                    Text(text = "$buttonText",fontSize = 30.sp)
                 }
             }
         }
     }
 }
 
+@Composable
+fun Greeting(name: String) {
+    Text(text = "Hello 1 $name!")
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     InsectifyTheme {
-        MyApp()
+        BottomButton("GET STARTED")
     }
 }
