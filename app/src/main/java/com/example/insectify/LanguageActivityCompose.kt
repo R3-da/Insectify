@@ -37,7 +37,7 @@ class LanguageActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun LanguageLayout() {
+fun LanguageLayout(languageLabels: List<String>) {
     MaterialTheme {
 
         ConstraintLayout (
@@ -59,21 +59,15 @@ fun LanguageLayout() {
                 Column(
                     modifier = Modifier.background(Color(0xFF7BB661))
                 ) {
-                    Row (
-                        modifier = Modifier
-                            .background(Color(0xFF7FF661))
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        LanguageButton(languageLabel = "English")
-                    }
-                    Row (
-                        modifier = Modifier
-                            .background(Color(0xFF7DD661))
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        LanguageButton(languageLabel = "English")
+                    for (languageLabel in languageLabels) {
+                        Row (
+                            modifier = Modifier
+                                .background(Color(0xFF7FF661))
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            LanguageButton(languageLabel = languageLabel)
+                        }
                     }
                 }
             }
@@ -141,6 +135,6 @@ fun Greeting2(name: String) {
 @Composable
 fun DefaultPreview2() {
     InsectifyTheme {
-        LanguageLayout()
+        LanguageLayout(listOf("English","French","Arabic"))
     }
 }
