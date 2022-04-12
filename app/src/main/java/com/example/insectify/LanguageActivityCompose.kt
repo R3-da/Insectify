@@ -39,28 +39,57 @@ class LanguageActivityCompose : ComponentActivity() {
 @Composable
 fun LanguageLayout() {
     MaterialTheme {
-        ConstraintLayout {
-            // Create references for the composables to constrain
+
+        ConstraintLayout (
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                ) {
             val (languagebuttons, bottombutton) = createRefs()
-            Column(
-                modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth().fillMaxHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Box(
+                modifier = Modifier
+                    .constrainAs(languagebuttons) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+//                        end.linkTo(parent.end)
+//                        start.linkTo(parent.start)
+                    }
             ) {
-                Row (
-                    modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                // Create references for the composables to constrain
+                Column(
+                    modifier = Modifier.background(Color(0xFF7BB661))
                 ) {
-                    LanguageButton(languageLabel = "English")
+                    Row (
+                        modifier = Modifier
+                            .background(Color(0xFF7FF661))
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        LanguageButton(languageLabel = "English")
+                    }
+                    Row (
+                        modifier = Modifier
+                            .background(Color(0xFF7DD661))
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        LanguageButton(languageLabel = "English")
+                    }
                 }
-                Row (
-                    modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    LanguageButton(languageLabel = "English")
-                }
+            }
+            Row (
+                modifier = Modifier
+                    .background(Color(0xFF7FF661))
+                    .fillMaxWidth()
+                    .constrainAs(bottombutton) {
+//                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+//                        end.linkTo(parent.end)
+//                        start.linkTo(parent.start)
+                    },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                BottomButton(buttonText = "CONTINUE")
             }
         }
     }
