@@ -15,11 +15,6 @@
             android:label="@string/title_activity_language_compose"
             android:theme="@style/Theme.Insectify" />
         <activity
-            android:name=".ui.theme.LanguageActivityCompose"
-            android:exported="false"
-            android:label="@string/title_activity_language_compose"
-            android:theme="@style/Theme.Insectify" />
-        <activity
             android:name=".WelcomeActivityCompose"
             android:exported="true"
             android:label="@string/title_activity_welcome_compose"

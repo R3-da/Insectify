@@ -9,15 +9,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.insectify.ui.theme.InsectifyTheme
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 class LanguageActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +36,13 @@ class LanguageActivityCompose : ComponentActivity() {
     }
 }
 
+@Destination
 @Composable
-fun LanguageLayout(languageLabels: List<String>) {
+fun LanguageActivityLayout(
+    navigator: DestinationsNavigator,
+    languageLabels: List<String> = listOf("English","French","Arabic")
+) {
     MaterialTheme {
-
         ConstraintLayout (
             modifier = Modifier
                 .fillMaxHeight()
@@ -51,8 +54,6 @@ fun LanguageLayout(languageLabels: List<String>) {
                     .constrainAs(languagebuttons) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-//                        end.linkTo(parent.end)
-//                        start.linkTo(parent.start)
                     }
             ) {
                 // Create references for the composables to constrain
@@ -76,14 +77,14 @@ fun LanguageLayout(languageLabels: List<String>) {
                     .background(Color(0xFF7FF661))
                     .fillMaxWidth()
                     .constrainAs(bottombutton) {
-//                        top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-//                        end.linkTo(parent.end)
-//                        start.linkTo(parent.start)
                     },
                 horizontalArrangement = Arrangement.Center
             ) {
-                BottomButton(buttonText = "CONTINUE")
+                BottomButton(
+                    navigator,
+                    buttonText = "CONTINUE",
+                    "")
             }
         }
     }
@@ -127,6 +128,43 @@ fun LanguageButton(languageLabel: String) {
 }
 
 @Composable
+fun TestButtonChangeColor(colorName: String) {
+    MaterialTheme {
+        Box (
+            Modifier.padding(
+                start = 30.dp,
+                end = 30.dp,
+                top = 20.dp,
+                bottom = 20.dp
+            )
+        ) {
+            TestButton("buttonName")
+
+        }
+    }
+}
+
+@Composable
+fun TestButton(buttonName: String) {
+    MaterialTheme {
+        var clickNum by remember {mutableStateOf(0)}
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Red,
+                contentColor = Color.Black),
+            onClick = {
+                clickNum++
+            }
+        ) {
+            Text(text = "${buttonName}",fontSize = 30.sp)
+        }
+    }
+}
+
+@Composable
 fun Greeting2(name: String) {
     Text(text = "Hello 2 $name!")
 }
@@ -135,6 +173,7 @@ fun Greeting2(name: String) {
 @Composable
 fun DefaultPreview2() {
     InsectifyTheme {
-        LanguageLayout(listOf("English","French","Arabic"))
+//        LanguageActivityLayout(listOf("English","French","Arabic"))
+        TestButtonChangeColor("Button Name")
     }
 }
