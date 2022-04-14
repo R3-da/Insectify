@@ -17,7 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.insectify.destinations.LanguageActivityLayoutDestination
+import com.example.insectify.destinations.WelcomeActivityLayoutDestination
 import com.example.insectify.ui.theme.InsectifyTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 class WelcomeActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,28 +35,63 @@ class WelcomeActivityCompose : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    DestinationsNavHost(navGraph = NavGraphs.root)
                 }
             }
         }
     }
 }
 
+@Destination(start = true)
+@Composable
+fun WelcomeActivityLayout(navigator: DestinationsNavigator) {
+    MaterialTheme {
+        ConstraintLayout (
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+        ) {
+            val (languagebuttons, bottombutton) = createRefs()
+            Box(
+                modifier = Modifier
+                    .constrainAs(languagebuttons) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+            ) {
+                // Create references for the composables to constrain
+
+            }
+            Row (
+                modifier = Modifier
+                    .background(Color(0xFF7FF661))
+                    .fillMaxWidth()
+                    .constrainAs(bottombutton) {
+                        bottom.linkTo(parent.bottom)
+                    },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                BottomButton(navigator,
+                    buttonText = "GET STARTED",
+                    "LanguageActivityLayoutDestination")
+            }
+        }
+    }
+}
 
 @Composable
-fun BottomButton(buttonText: String) {
+fun BottomButton(
+    navigator: DestinationsNavigator,
+    buttonText: String,
+    destinationClassName: String
+) {
     MaterialTheme {
         var isClicked by remember { mutableStateOf(false) }
+        var firstClicked = false
         val surfaceColor: Color by animateColorAsState(
             if (isClicked) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
         )
         // Material Components like Button, Card, Switch, etc.
-        Column(
-            modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
-
-        ) {
             Box(
                 Modifier.padding(
                     start = 30.dp,
@@ -66,8 +107,11 @@ fun BottomButton(buttonText: String) {
                         contentColor = Color.Black),
                     onClick = {
                         isClicked = !isClicked
+                        navigator.navigate(LanguageActivityLayoutDestination())
                     },
-                    modifier = Modifier.fillMaxWidth().height(60.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
 
                 ) {
                     // Inner content including an icon and a text label
@@ -75,7 +119,6 @@ fun BottomButton(buttonText: String) {
                     Text(text = "$buttonText",fontSize = 30.sp)
                 }
             }
-        }
     }
 }
 
@@ -88,6 +131,5 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     InsectifyTheme {
-        BottomButton("GET STARTED")
     }
 }
