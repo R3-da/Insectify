@@ -15,31 +15,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.example.insectify.ui.theme.InsectifyTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-class LanguageActivityCompose : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            InsectifyTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting2("Android")
-                }
-            }
-        }
-    }
-}
-
 @Destination
 @Composable
 fun LanguageActivityLayout(
-    navigator: DestinationsNavigator,
+    navigator: NavController,
     languageLabels: List<String> = listOf("English","French","Arabic")
 ) {
     MaterialTheme {
@@ -173,7 +157,6 @@ fun Greeting2(name: String) {
 @Composable
 fun DefaultPreview2() {
     InsectifyTheme {
-//        LanguageActivityLayout(listOf("English","French","Arabic"))
         TestButtonChangeColor("Button Name")
     }
 }
