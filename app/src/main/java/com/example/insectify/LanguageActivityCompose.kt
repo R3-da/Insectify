@@ -9,15 +9,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.insectify.ui.theme.InsectifyTheme
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 class LanguageActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,31 +36,55 @@ class LanguageActivityCompose : ComponentActivity() {
     }
 }
 
+@Destination
 @Composable
-fun LanguageLayout() {
+fun LanguageActivityLayout(
+    navigator: DestinationsNavigator,
+    languageLabels: List<String> = listOf("English","French","Arabic")
+) {
     MaterialTheme {
-        ConstraintLayout {
-            // Create references for the composables to constrain
+        ConstraintLayout (
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                ) {
             val (languagebuttons, bottombutton) = createRefs()
-            Column(
-                modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth().fillMaxHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Box(
+                modifier = Modifier
+                    .constrainAs(languagebuttons) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
             ) {
-                Row (
-                    modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                // Create references for the composables to constrain
+                Column(
+                    modifier = Modifier.background(Color(0xFF7BB661))
                 ) {
-                    LanguageButton(languageLabel = "English")
+                    for (languageLabel in languageLabels) {
+                        Row (
+                            modifier = Modifier
+                                .background(Color(0xFF7FF661))
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            LanguageButton(languageLabel = languageLabel)
+                        }
+                    }
                 }
-                Row (
-                    modifier = Modifier.background(Color(0xFF7BB661)).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    LanguageButton(languageLabel = "English")
-                }
+            }
+            Row (
+                modifier = Modifier
+                    .background(Color(0xFF7FF661))
+                    .fillMaxWidth()
+                    .constrainAs(bottombutton) {
+                        bottom.linkTo(parent.bottom)
+                    },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                BottomButton(
+                    navigator,
+                    buttonText = "CONTINUE",
+                    "")
             }
         }
     }
@@ -104,6 +128,43 @@ fun LanguageButton(languageLabel: String) {
 }
 
 @Composable
+fun TestButtonChangeColor(colorName: String) {
+    MaterialTheme {
+        Box (
+            Modifier.padding(
+                start = 30.dp,
+                end = 30.dp,
+                top = 20.dp,
+                bottom = 20.dp
+            )
+        ) {
+            TestButton("buttonName")
+
+        }
+    }
+}
+
+@Composable
+fun TestButton(buttonName: String) {
+    MaterialTheme {
+        var clickNum by remember {mutableStateOf(0)}
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Red,
+                contentColor = Color.Black),
+            onClick = {
+                clickNum++
+            }
+        ) {
+            Text(text = "${buttonName}",fontSize = 30.sp)
+        }
+    }
+}
+
+@Composable
 fun Greeting2(name: String) {
     Text(text = "Hello 2 $name!")
 }
@@ -112,6 +173,7 @@ fun Greeting2(name: String) {
 @Composable
 fun DefaultPreview2() {
     InsectifyTheme {
-        LanguageLayout()
+//        LanguageActivityLayout(listOf("English","French","Arabic"))
+        TestButtonChangeColor("Button Name")
     }
 }
