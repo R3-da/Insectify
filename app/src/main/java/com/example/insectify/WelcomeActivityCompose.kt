@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.example.insectify.destinations.LanguageActivityLayoutDestination
 import com.example.insectify.destinations.WelcomeActivityLayoutDestination
 import com.example.insectify.ui.theme.InsectifyTheme
@@ -25,26 +26,9 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-class WelcomeActivityCompose : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            InsectifyTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    DestinationsNavHost(navGraph = NavGraphs.root)
-                }
-            }
-        }
-    }
-}
-
 @Destination(start = true)
 @Composable
-fun WelcomeActivityLayout(navigator: DestinationsNavigator) {
+fun WelcomeActivityLayout(navController: NavController) {
     MaterialTheme {
         ConstraintLayout (
             modifier = Modifier
@@ -71,7 +55,7 @@ fun WelcomeActivityLayout(navigator: DestinationsNavigator) {
                     },
                 horizontalArrangement = Arrangement.Center
             ) {
-                BottomButton(navigator,
+                BottomButton(navController,
                     buttonText = "GET STARTED",
                     "LanguageActivityLayoutDestination")
             }
@@ -81,7 +65,7 @@ fun WelcomeActivityLayout(navigator: DestinationsNavigator) {
 
 @Composable
 fun BottomButton(
-    navigator: DestinationsNavigator,
+    navController: NavController,
     buttonText: String,
     destinationClassName: String
 ) {
@@ -107,7 +91,7 @@ fun BottomButton(
                         contentColor = Color.Black),
                     onClick = {
                         isClicked = !isClicked
-                        navigator.navigate(LanguageActivityLayoutDestination())
+                        navController.navigate(route = Screen.LanguageScreen.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
