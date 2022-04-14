@@ -14,12 +14,12 @@ fun SetupNavGraph(
         composable(
             route = Screen.WelcomeScreen.route
         ) {
-            WelcomeActivityCompose()
+            WelcomeActivityLayout(navController)
         }
         composable(
             route = Screen.LanguageScreen.route
         ) {
-            LanguageActivityCompose()
+            LanguageActivityLayout(navController)
         }
     }
 }
