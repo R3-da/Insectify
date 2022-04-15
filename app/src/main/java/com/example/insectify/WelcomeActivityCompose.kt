@@ -57,7 +57,7 @@ fun WelcomeActivityLayout(navController: NavController) {
             ) {
                 BottomButton(navController,
                     buttonText = "GET STARTED",
-                    "LanguageActivityLayoutDestination")
+                    Screen.LanguageScreen.route)
             }
         }
     }
@@ -67,7 +67,7 @@ fun WelcomeActivityLayout(navController: NavController) {
 fun BottomButton(
     navController: NavController,
     buttonText: String,
-    destinationClassName: String
+    destinationRoute: String
 ) {
     MaterialTheme {
         var isClicked by remember { mutableStateOf(false) }
@@ -91,7 +91,7 @@ fun BottomButton(
                         contentColor = Color.Black),
                     onClick = {
                         isClicked = !isClicked
-                        navController.navigate(route = Screen.LanguageScreen.route)
+                        navController.navigate(route = destinationRoute)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
