@@ -68,7 +68,7 @@ fun LanguageActivityLayout(
                 BottomButton(
                     navigator,
                     buttonText = "CONTINUE",
-                    "")
+                    Screen.PredictScreen.route)
             }
         }
     }
