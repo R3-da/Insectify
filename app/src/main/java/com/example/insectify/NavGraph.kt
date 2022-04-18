@@ -21,5 +21,10 @@ fun SetupNavGraph(
         ) {
             LanguageActivityLayout(navController)
         }
+        composable(
+            route = Screen.PredictScreen.route
+        ) {
+            PredictLayout(navController)
+        }
     }
 }
