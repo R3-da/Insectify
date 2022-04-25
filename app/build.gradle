@@ -24,6 +24,8 @@ android {
         targetSdk 31
         versionCode 1
         versionName "1.0"
+//        for using vector drawables
+        vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -76,4 +78,7 @@ dependencies {
     ksp 'io.github.raamcosta.compose-destinations:ksp:1.4.4-beta'
     def nav_version = "2.4.2"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+//    splash screen new api
+    implementation 'androidx.core:core-splashscreen:1.0.0-alpha02'
 }
