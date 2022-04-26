@@ -8,7 +8,11 @@
             android:height="408dp"
             android:viewportWidth="408"
             android:viewportHeight="408">
-            <group android:name="group_1">
+            <group android:name="group_1"
+                android:pivotX="204"
+                android:pivotY="204"
+                android:scaleX="0.3"
+                android:scaleY="0.3">
                 <group
                     android:name="group"
                     android:pivotX="204"
