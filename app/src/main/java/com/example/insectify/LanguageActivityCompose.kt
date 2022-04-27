@@ -100,13 +100,13 @@ fun LanguageButton(languageLabel: String) {
                     isClicked = !isClicked
                 },
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(75.dp)
+                    .width(150.dp)
+                    .height(65.dp)
 
             ) {
                 // Inner content including an icon and a text label
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "$languageLabel",fontSize = 30.sp)
+                Text(text = "$languageLabel",fontSize = 25.sp)
             }
     }
 }
