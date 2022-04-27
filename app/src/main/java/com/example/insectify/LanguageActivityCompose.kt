@@ -111,52 +111,9 @@ fun LanguageButton(languageLabel: String) {
     }
 }
 
-@Composable
-fun TestButtonChangeColor(colorName: String) {
-    MaterialTheme {
-        Box (
-            Modifier.padding(
-                start = 30.dp,
-                end = 30.dp,
-                top = 20.dp,
-                bottom = 20.dp
-            )
-        ) {
-            TestButton("buttonName")
-
-        }
-    }
-}
-
-@Composable
-fun TestButton(buttonName: String) {
-    MaterialTheme {
-        var clickNum by remember {mutableStateOf(0)}
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Red,
-                contentColor = Color.Black),
-            onClick = {
-                clickNum++
-            }
-        ) {
-            Text(text = "${buttonName}",fontSize = 30.sp)
-        }
-    }
-}
-
-@Composable
-fun Greeting2(name: String) {
-    Text(text = "Hello 2 $name!")
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview2() {
     InsectifyTheme {
-        TestButtonChangeColor("Button Name")
     }
 }
