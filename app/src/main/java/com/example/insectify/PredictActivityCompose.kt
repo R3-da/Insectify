@@ -31,117 +31,116 @@ fun PredictLayout(navController: NavController) {
             topBar = { TopAppBar(title = {Text("Insectify")},backgroundColor = colorResource(R.color.blue_light))  },
             drawerContent = { Text(text = "Drawer Menu 1") },
             content = {
-                ConstraintLayout(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    val (imageField, uploadRow, predictButton) = createRefs()
+                    Row (
+                        modifier = Modifier.weight(1f)
+                            ) {
 
-                    Card(
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .padding(
-                                start = 40.dp,
-                                end = 40.dp
-                            )
-                            .fillMaxWidth()
-                            .aspectRatio(0.99f)
-                            .constrainAs(imageField) {
-                                top.linkTo(parent.top, margin = 70.dp)
-                            },
-                        backgroundColor = colorResource(R.color.grey),
-                    ) {
-                        Box(
+                    }
+                    Row (
+                       modifier = Modifier
+                           .weight(4f)
+                            ) {
+                        Card(
+                            shape = RoundedCornerShape(20.dp),
                             modifier = Modifier
-                                .fillMaxSize()
+                                .padding(
+                                    start = 40.dp,
+                                    end = 40.dp,
+                                    bottom = 10.dp
+                                )
+                                .fillMaxSize(),
+                            backgroundColor = colorResource(R.color.grey)
                         ) {
-                            Text(
-                                "Upload Image",
-                                Modifier.padding(16.dp)
-                                    .align(Alignment.Center),
-                                textAlign = TextAlign.Center
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                Text(
+                                    "Upload Image",
+                                    Modifier.padding(20.dp)
+                                        .align(Alignment.Center),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(
+                                start = 20.dp,
+                                end = 20.dp,
+                                bottom = 10.dp
+                            )
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Button(
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = colorResource(R.color.blue_light),
+                                contentColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            onClick = {
+                            }
+                        ) {
+                            Text(text = "Upload", fontSize = 20.sp)
+                        }
+                        Button(
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = colorResource(R.color.blue_light),
+                                contentColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            onClick = {
+                            }
+                        ) {
+                            Text(text = "Camera", fontSize = 20.sp)
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(
+                                start = 20.dp,
+                                end = 20.dp,
+                                bottom = 10.dp
+                            )
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Button(
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = colorResource(R.color.green_harsh),
+                                contentColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            onClick = {
+                            }
+                        ) {
+                            Text(text = "Predict", fontSize = 20.sp)
+                        }
+                    }
+                    Row (
+                        modifier= Modifier.weight(3f)
+                            ) {
 
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    top = 40.dp,
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                )
-                                .height(65.dp)
-                                .fillMaxWidth()
-                                .constrainAs(uploadRow) {
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                    top.linkTo(imageField.bottom)
-                                },
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Button(
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = colorResource(R.color.blue_light),
-                                    contentColor = Color.Black
-                                ),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(65.dp),
-                                onClick = {
-                                }
-                            ) {
-                                Text(text = "Upload", fontSize = 30.sp)
-                            }
-                            Button(
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = colorResource(R.color.blue_light),
-                                    contentColor = Color.Black
-                                ),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(65.dp),
-                                onClick = {
-                                }
-                            ) {
-                                Text(text = "Camera", fontSize = 30.sp)
-                            }
-                        }
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    top = 40.dp,
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                )
-                                .height(65.dp)
-                                .fillMaxWidth()
-                                .constrainAs(predictButton) {
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                    top.linkTo(uploadRow.bottom)
-                                },
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Button(
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = colorResource(R.color.green_harsh),
-                                    contentColor = Color.Black
-                                ),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(65.dp),
-                                onClick = {
-                                }
-                            ) {
-                                Text(text = "Predict", fontSize = 30.sp)
-                            }
-                        }
                     }
                 }
+            }
         )
     }
 }
