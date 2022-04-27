@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,22 +26,27 @@ fun WelcomeActivityLayout(navController: NavController) {
                 .fillMaxHeight()
                 .fillMaxWidth()
         ) {
-            val (languagebuttons, bottombutton) = createRefs()
+            val (iconBox, bottomButton) = createRefs()
             Box(
                 modifier = Modifier
-                    .constrainAs(languagebuttons) {
+                    .constrainAs(iconBox) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                     }
             ) {
-                // Create references for the composables to constrain
+                // Create references for the composable to constrain
 
             }
             Row (
                 modifier = Modifier
-                    .background(Color(0xFF7FF661))
                     .fillMaxWidth()
-                    .constrainAs(bottombutton) {
+                    .padding(
+                        start = 30.dp,
+                        end = 30.dp,
+                        top = 20.dp,
+                        bottom = 20.dp
+                    )
+                    .constrainAs(bottomButton) {
                         bottom.linkTo(parent.bottom)
                     },
                 horizontalArrangement = Arrangement.Center
@@ -61,19 +67,10 @@ fun BottomButton(
 ) {
     MaterialTheme {
         var isClicked by remember { mutableStateOf(false) }
-        var firstClicked = false
         val surfaceColor: Color by animateColorAsState(
-            if (isClicked) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+            if (isClicked) colorResource(R.color.green_harsh) else colorResource(R.color.grey),
         )
         // Material Components like Button, Card, Switch, etc.
-            Box(
-                Modifier.padding(
-                    start = 30.dp,
-                    end = 30.dp,
-                    top = 20.dp,
-                    bottom = 20.dp
-                )
-            ) {
                 Button(
                     shape = RoundedCornerShape(15.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -85,20 +82,15 @@ fun BottomButton(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(60.dp)
+                        .height(65.dp)
 
                 ) {
                     // Inner content including an icon and a text label
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "$buttonText",fontSize = 30.sp)
-                }
-            }
-    }
-}
+                    Text(text = buttonText,fontSize =  25.sp)
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello 1 $name!")
+                }
+    }
 }
 
 @Preview(showBackground = true)
