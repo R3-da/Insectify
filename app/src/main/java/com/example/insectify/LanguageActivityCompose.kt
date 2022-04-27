@@ -98,7 +98,7 @@ fun LanguageButton(languageLabel: String) {
         )
         // Material Components like Button, Card, Switch, etc.
             Button(
-                shape = RoundedCornerShape(15.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = surfaceColor,
                     contentColor = Color.Black),
