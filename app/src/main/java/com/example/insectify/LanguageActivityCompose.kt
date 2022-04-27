@@ -66,6 +66,12 @@ fun LanguageActivityLayout(
                     Row (
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(
+                                start = 30.dp,
+                                end = 30.dp,
+                                top = 20.dp,
+                                bottom = 20.dp
+                            )
                             .constrainAs(bottombutton) {
                                 bottom.linkTo(parent.bottom)
                             },
@@ -92,7 +98,7 @@ fun LanguageButton(languageLabel: String) {
         )
         // Material Components like Button, Card, Switch, etc.
             Button(
-                shape = RoundedCornerShape(15.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = surfaceColor,
                     contentColor = Color.Black),
