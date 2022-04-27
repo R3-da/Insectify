@@ -66,6 +66,12 @@ fun LanguageActivityLayout(
                     Row (
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(
+                                start = 30.dp,
+                                end = 30.dp,
+                                top = 20.dp,
+                                bottom = 20.dp
+                            )
                             .constrainAs(bottombutton) {
                                 bottom.linkTo(parent.bottom)
                             },
