@@ -37,7 +37,18 @@ import com.example.insectify.ui.theme.InsectifyTheme
 fun PredictLayout(navController: NavController) {
     MaterialTheme{
         Scaffold(
-            topBar = { TopAppBar(title = {Text("Insectify")},backgroundColor = colorResource(R.color.blue_light))  },
+            topBar = {
+                TopAppBar(title = {Text("Insectify")},
+                    backgroundColor = colorResource(R.color.blue_light),
+                    actions = {
+                        IconButton(onClick = {
+                            navController.navigate(route = Screen.PredictScreen.route)
+                        }) {
+                            Icon(painterResource(R.drawable.ic_outline_info_24), contentDescription = "")
+                        }
+                    })
+                     },
+
             drawerContent = { Text(text = "Drawer Menu 1") },
             content = {
                 Column(
