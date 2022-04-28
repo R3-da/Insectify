@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -33,49 +34,47 @@ fun LanguageActivityLayout(
             topBar = { TopAppBar(title = {Text("Language")},backgroundColor = colorResource(R.color.blue_light))  },
             drawerContent = { Text(text = "Drawer Menu 1") },
             content = {
-                ConstraintLayout (
+                Column (
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth()
+                        .fillMaxSize()
                 ) {
-                    val (languagebuttons, bottombutton) = createRefs()
-                    Box(
-                        modifier = Modifier
-                            .constrainAs(languagebuttons) {
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                            }
-                    ) {
+                    Spacer(modifier = Modifier.weight(2.5f))
                         // Create references for the composables to constrain
-                        Column {
-                            for (languageLabel in languageLabels) {
-                                Row (
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(
-                                            top = 20.dp,
-                                            bottom = 20.dp
-                                        ),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    LanguageButton(languageLabel = languageLabel)
-                                }
+                    for (languageLabel in languageLabels) {
+                        Spacer(modifier = Modifier.weight(0.25f))
+                        Row (
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize()
+                                .padding(
+                                    start= 20.dp,
+                                    end = 20.dp,
+                                    bottom = 10.dp
+                                ),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Spacer(modifier = Modifier.weight(0.5f))
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            ) {
+                                LanguageButton(languageLabel = languageLabel)
                             }
+                            Spacer(modifier = Modifier.weight(0.5f))
                         }
                     }
+                    Spacer(modifier = Modifier.weight(0.25f))
+                    Spacer(modifier = Modifier.weight(2.5f))
                     Row (
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .weight(1f)
+                            .fillMaxSize()
                             .padding(
-                                start = 30.dp,
-                                end = 30.dp,
-                                top = 20.dp,
-                                bottom = 20.dp
+                                start = 20.dp,
+                                end = 20.dp,
+                                bottom = 10.dp
                             )
-                            .constrainAs(bottombutton) {
-                                bottom.linkTo(parent.bottom)
-                            },
-                        horizontalArrangement = Arrangement.Center
                     ) {
                         BottomButton(
                             navigator,
@@ -105,13 +104,10 @@ fun LanguageButton(languageLabel: String) {
                     isClicked = !isClicked
                 },
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(65.dp)
+                    .fillMaxSize()
 
             ) {
-                // Inner content including an icon and a text label
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "$languageLabel",fontSize = 25.sp)
+                Text(text = "$languageLabel",fontSize = 15.sp)
             }
     }
 }
