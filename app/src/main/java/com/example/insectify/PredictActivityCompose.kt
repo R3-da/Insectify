@@ -1,17 +1,26 @@
 package com.example.insectify
 
 import android.annotation.SuppressLint
+import android.widget.Space
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
+
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,13 +45,15 @@ fun PredictLayout(navController: NavController) {
                         .fillMaxSize()
                 ) {
                     Row (
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(0.7f)
                             ) {
 
                     }
                     Row (
                        modifier = Modifier
                            .weight(4f)
+                        .fillMaxWidth(),
+                           horizontalArrangement = Arrangement.Center
                             ) {
                         Card(
                             shape = RoundedCornerShape(20.dp),
@@ -52,6 +63,7 @@ fun PredictLayout(navController: NavController) {
                                     end = 40.dp,
                                     bottom = 10.dp
                                 )
+                                .aspectRatio(0.99f)
                                 .fillMaxSize(),
                             backgroundColor = colorResource(R.color.grey)
                         ) {
@@ -59,11 +71,9 @@ fun PredictLayout(navController: NavController) {
                                 modifier = Modifier
                                     .fillMaxSize()
                             ) {
-                                Text(
-                                    "Upload Image",
-                                    Modifier.padding(20.dp)
-                                        .align(Alignment.Center),
-                                    textAlign = TextAlign.Center
+                                Icon(painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
+                                    contentDescription = "content description",
+                                    modifier = Modifier.align(Alignment.Center).alpha(0.1f).fillMaxSize(0.3f)
                                 )
                             }
                         }
@@ -91,7 +101,8 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Upload", fontSize = 20.sp)
+                            Text(text = "Gallery ", fontSize = 15.sp)
+                            Icon(painter = painterResource(R.drawable.ic_outline_photo_library_24) ,contentDescription = "content description")
                         }
                         Button(
                             shape = RoundedCornerShape(20.dp),
@@ -105,7 +116,8 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Camera", fontSize = 20.sp)
+                            Text(text = "Camera ", fontSize = 15.sp)
+                            Icon(painter = painterResource(R.drawable.ic_outline_photo_camera_24),contentDescription = "content description")
                         }
                     }
                     Row(
@@ -119,6 +131,9 @@ fun PredictLayout(navController: NavController) {
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        Spacer(
+                            modifier = Modifier.weight(0.5f)
+                        )
                         Button(
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -131,13 +146,44 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Predict", fontSize = 20.sp)
+                            Text(text = "Predict", fontSize = 15.sp)
                         }
+                        Spacer(
+                            modifier = Modifier.weight(0.5f)
+                        )
                     }
-                    Row (
-                        modifier= Modifier.weight(3f)
+                    Spacer(
+                        modifier = Modifier.weight(0.3f)
+                    )
+                    Column (
+                        modifier= Modifier
+                            .weight(3f)
+                            .fillMaxSize()
                             ) {
-
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize(),
+                            text = "Prediction 1",
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize(),
+                            text = "Prediction 2",
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize(),
+                            text = "Prediction 3",
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
