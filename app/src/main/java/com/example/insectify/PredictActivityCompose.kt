@@ -42,14 +42,12 @@ fun PredictLayout(navController: NavController) {
                     backgroundColor = colorResource(R.color.blue_light),
                     actions = {
                         IconButton(onClick = {
-                            navController.navigate(route = Screen.PredictScreen.route)
+                            navController.navigate(route = Screen.DetailsScreen.route)
                         }) {
                             Icon(painterResource(R.drawable.ic_outline_info_24), contentDescription = "")
                         }
                     })
                      },
-
-            drawerContent = { Text(text = "Drawer Menu 1") },
             content = {
                 Column(
                     modifier = Modifier
