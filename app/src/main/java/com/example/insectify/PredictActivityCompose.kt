@@ -19,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -108,7 +110,7 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Gallery ", fontSize = 15.sp)
+                            Text(text = "Gallery ", fontSize = dpToSp(15.dp))
                             Icon(painter = painterResource(R.drawable.ic_outline_photo_library_24) ,contentDescription = "content description")
                         }
                         Button(
@@ -123,7 +125,7 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Camera ", fontSize = 15.sp)
+                            Text(text = "Camera ", fontSize = dpToSp(15.dp))
                             Icon(painter = painterResource(R.drawable.ic_outline_photo_camera_24),contentDescription = "content description")
                         }
                     }
@@ -153,7 +155,7 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Predict", fontSize = 15.sp)
+                            Text(text = "Predict", fontSize = dpToSp(15.dp))
                         }
                         Spacer(
                             modifier = Modifier.weight(0.5f)
@@ -163,32 +165,35 @@ fun PredictLayout(navController: NavController) {
                         modifier = Modifier.weight(0.3f)
                     )
                     Column (
-                        modifier= Modifier
+                        modifier = Modifier
                             .weight(3f)
-                            .fillMaxSize()
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                         Text(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxSize(),
+                                .fillMaxWidth(),
                             text = "Prediction : 100%",
-                            fontSize = 15.sp,
+                            fontSize = dpToSp(15.dp),
                             textAlign = TextAlign.Center
                         )
+                        Spacer(modifier = Modifier
+                            .height(20.dp))
                         Text(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxSize(),
+                                .fillMaxWidth(),
                             text = "Prediction : 100%",
-                            fontSize = 15.sp,
+                            fontSize = dpToSp(15.dp),
                             textAlign = TextAlign.Center
                         )
+                        Spacer(modifier = Modifier
+                            .height(20.dp))
                         Text(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxSize(),
+                                .fillMaxWidth(),
                             text = "Prediction : 100%",
-                            fontSize = 15.sp,
+                            fontSize = dpToSp(15.dp),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -198,6 +203,8 @@ fun PredictLayout(navController: NavController) {
     }
 }
 
+@Composable
+fun dpToSp(dp: Dp) = with(LocalDensity.current) { dp.toSp() }
 
 @Preview(showBackground = true)
 @Composable
