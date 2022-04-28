@@ -26,5 +26,10 @@ fun SetupNavGraph(
         ) {
             PredictLayout(navController)
         }
+        composable(
+            route = Screen.DetailsScreen.route
+        ) {
+            DetailsLayout(navController)
+        }
     }
 }
