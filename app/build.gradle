@@ -81,4 +81,9 @@ dependencies {
 
 //    splash screen new api
     implementation 'androidx.core:core-splashscreen:1.0.0-alpha02'
+
+//    compose-icons library
+//    implementation("br.com.devsrsouza.compose.icons.android:font-awesome:5.15.2")
+//    extend material icons
+//    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 }
