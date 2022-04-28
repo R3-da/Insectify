@@ -53,11 +53,9 @@ fun PredictLayout(navController: NavController) {
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    Row (
+                    Spacer (
                         modifier = Modifier.weight(0.7f)
-                            ) {
-
-                    }
+                            )
                     Row (
                        modifier = Modifier
                            .weight(4f)
@@ -173,7 +171,7 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
-                            text = "Prediction 1",
+                            text = "Prediction : 100%",
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
@@ -181,7 +179,7 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
-                            text = "Prediction 2",
+                            text = "Prediction : 100%",
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
@@ -189,7 +187,7 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
-                            text = "Prediction 3",
+                            text = "Prediction : 100%",
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
