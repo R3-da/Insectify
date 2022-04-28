@@ -83,9 +83,8 @@ fun LanguageActivityLayout(
                             Screen.PredictScreen.route)
                     }
                 }
-                      }
+            }
         )
-
     }
 }
 
