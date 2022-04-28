@@ -37,18 +37,25 @@ import com.example.insectify.ui.theme.InsectifyTheme
 fun PredictLayout(navController: NavController) {
     MaterialTheme{
         Scaffold(
-            topBar = { TopAppBar(title = {Text("Insectify")},backgroundColor = colorResource(R.color.blue_light))  },
-            drawerContent = { Text(text = "Drawer Menu 1") },
+            topBar = {
+                TopAppBar(title = {Text("Insectify")},
+                    backgroundColor = colorResource(R.color.blue_light),
+                    actions = {
+                        IconButton(onClick = {
+                            navController.navigate(route = Screen.DetailsScreen.route)
+                        }) {
+                            Icon(painterResource(R.drawable.ic_outline_info_24), contentDescription = "")
+                        }
+                    })
+                     },
             content = {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    Row (
+                    Spacer (
                         modifier = Modifier.weight(0.7f)
-                            ) {
-
-                    }
+                            )
                     Row (
                        modifier = Modifier
                            .weight(4f)
@@ -164,7 +171,7 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
-                            text = "Prediction 1",
+                            text = "Prediction : 100%",
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
@@ -172,7 +179,7 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
-                            text = "Prediction 2",
+                            text = "Prediction : 100%",
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
@@ -180,7 +187,7 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize(),
-                            text = "Prediction 3",
+                            text = "Prediction : 100%",
                             fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )

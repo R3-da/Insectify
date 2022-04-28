@@ -14,42 +14,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.insectify.ui.theme.InsectifyTheme
 import com.ramcosta.composedestinations.annotation.Destination
+import kotlinx.coroutines.delay
+import java.util.concurrent.TimeUnit
 
 @Destination(start = true)
 @Composable
 fun WelcomeActivityLayout(navController: NavController) {
     MaterialTheme {
-        ConstraintLayout (
+        Column (
             modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
+                .fillMaxSize()
         ) {
-            val (iconBox, bottomButton) = createRefs()
-            Box(
-                modifier = Modifier
-                    .constrainAs(iconBox) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-            ) {
-                // Create references for the composable to constrain
-
-            }
+            Spacer(modifier = Modifier.weight(9f))
             Row (
                 modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
                     .padding(
-                        start = 30.dp,
-                        end = 30.dp,
-                        top = 20.dp,
-                        bottom = 20.dp
+                        start = 20.dp,
+                        end = 20.dp,
+                        bottom = 10.dp
                     )
-                    .constrainAs(bottomButton) {
-                        bottom.linkTo(parent.bottom)
-                    },
-                horizontalArrangement = Arrangement.Center
             ) {
                 BottomButton(navController,
                     buttonText = "GET STARTED",
@@ -68,7 +56,13 @@ fun BottomButton(
     MaterialTheme {
         var isClicked by remember { mutableStateOf(false) }
         val surfaceColor: Color by animateColorAsState(
-            if (isClicked) colorResource(R.color.green_harsh) else colorResource(R.color.grey),
+            if (isClicked)
+                colorResource(R.color.green_harsh)
+            else
+                colorResource(R.color.grey),
+            finishedListener = {
+                navController.navigate(route = destinationRoute)
+            }
         )
         // Material Components like Button, Card, Switch, etc.
                 Button(
@@ -78,16 +72,13 @@ fun BottomButton(
                         contentColor = Color.Black),
                     onClick = {
                         isClicked = !isClicked
-                        navController.navigate(route = destinationRoute)
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(65.dp)
-
+                        .fillMaxSize()
                 ) {
                     // Inner content including an icon and a text label
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = buttonText,fontSize =  25.sp)
+                    Text(text = buttonText,fontSize =  15.sp)
 
                 }
     }
@@ -97,5 +88,6 @@ fun BottomButton(
 @Composable
 fun DefaultPreview() {
     InsectifyTheme {
+        WelcomeActivityLayout(navController = rememberNavController())
     }
 }
