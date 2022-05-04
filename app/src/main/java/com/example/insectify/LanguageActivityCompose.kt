@@ -1,6 +1,7 @@
 package com.example.insectify
 
 import android.annotation.SuppressLint
+import android.view.textclassifier.TextLanguage
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,12 +28,13 @@ import com.ramcosta.composedestinations.annotation.Destination
 @Composable
 fun LanguageActivityLayout(
     navigator: NavController,
-    languageLabels: List<String> = listOf("English","French","Arabic")
+    languageLabels: List<String> = listOf("English","Français","العربية")
 ) {
+    var selectedLanguage by remember {mutableStateOf("")}
+
     MaterialTheme {
         Scaffold(
             topBar = { TopAppBar(title = {Text("Language")},backgroundColor = colorResource(R.color.blue_light))  },
-            drawerContent = { Text(text = "Drawer Menu 1") },
             content = {
                 Column (
                     modifier = Modifier
@@ -59,7 +61,9 @@ fun LanguageActivityLayout(
                                     .weight(1f)
                                     .fillMaxHeight()
                             ) {
-                                LanguageButton(languageLabel = languageLabel)
+                                LanguageButton(languageLabel = languageLabel,selectedLanguage.toString()){
+                                    selectedLanguage = it
+                                }
                             }
                             Spacer(modifier = Modifier.weight(0.5f))
                         }
@@ -87,28 +91,27 @@ fun LanguageActivityLayout(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun LanguageButton(languageLabel: String) {
+fun LanguageButton(languageLabel: String, selectedLanguage: String,languageChange: (String) -> Unit){
     MaterialTheme {
-        var isClicked by remember { mutableStateOf(false) }
         val surfaceColor: Color by animateColorAsState(
-            if (isClicked) colorResource(R.color.blue_light) else colorResource(R.color.grey) ,
+            if (selectedLanguage == languageLabel) colorResource(R.color.blue_light) else colorResource(R.color.grey),
         )
         // Material Components like Button, Card, Switch, etc.
-            Button(
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = surfaceColor,
-                    contentColor = Color.Black),
-                onClick = {
-                    isClicked = !isClicked
-                },
-                modifier = Modifier
-                    .fillMaxSize()
-
-            ) {
-                Text(text = "$languageLabel",fontSize = 15.sp)
-            }
+        Button(
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = surfaceColor,
+                contentColor = Color.Black),
+            onClick = {
+                languageChange(languageLabel)
+            },
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Text(text = "$languageLabel",fontSize = 15.sp)
+        }
     }
 }
 
