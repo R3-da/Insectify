@@ -1,8 +1,20 @@
 package com.example.insectify
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.widget.Space
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,24 +31,65 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Button
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.insectify.ui.theme.InsectifyTheme
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PredictLayout(navController: NavController) {
+    var isCameraSelected = false
+    val context = LocalContext.current
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        bitmap = if (Build.VERSION.SDK_INT < 28) {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        } else {
+            val source = ImageDecoder.createSource(context.contentResolver, uri!!)
+            ImageDecoder.decodeBitmap(source)
+        }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { btm: Bitmap? ->
+        bitmap = btm
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            if (isCameraSelected) {
+                cameraLauncher.launch()
+            } else {
+                galleryLauncher.launch("image/*")
+            }
+        } else {
+            Toast.makeText(context, "Permission Denied!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     MaterialTheme{
         Scaffold(
             topBar = {
@@ -61,7 +114,7 @@ fun PredictLayout(navController: NavController) {
                     Row (
                        modifier = Modifier
                            .weight(4f)
-                        .fillMaxWidth(),
+                           .fillMaxWidth(),
                            horizontalArrangement = Arrangement.Center
                             ) {
                         Card(
@@ -76,15 +129,28 @@ fun PredictLayout(navController: NavController) {
                                 .fillMaxSize(),
                             backgroundColor = colorResource(R.color.grey)
                         ) {
-                            Box(
+                           Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                             ) {
                                 Icon(painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
                                     contentDescription = "content description",
-                                    modifier = Modifier.align(Alignment.Center).alpha(0.1f).fillMaxSize(0.3f)
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .alpha(0.1f)
+                                        .fillMaxSize(0.3f)
                                 )
                             }
+
+                            bitmap?.let { it1 ->
+                                Image(
+                                    contentDescription = null ,
+                                    bitmap = it1.asImageBitmap(),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
                         }
                     }
                     Row(
@@ -108,6 +174,17 @@ fun PredictLayout(navController: NavController) {
                                 .weight(1f)
                                 .fillMaxHeight(),
                             onClick = {
+                                when (PackageManager.PERMISSION_GRANTED) {
+                                    ContextCompat.checkSelfPermission(
+                                        context, Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) -> {
+                                        galleryLauncher.launch("image/*")
+                                    }
+                                    else -> {
+                                        isCameraSelected = false
+                                        permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    }
+                                }
                             }
                         ) {
                             Text(text = "Gallery ", fontSize = dpToSp(15.dp))
@@ -123,6 +200,17 @@ fun PredictLayout(navController: NavController) {
                                 .weight(1f)
                                 .fillMaxHeight(),
                             onClick = {
+                                when (PackageManager.PERMISSION_GRANTED) {
+                                    ContextCompat.checkSelfPermission(
+                                        context, Manifest.permission.CAMERA
+                                    ) -> {
+                                        cameraLauncher.launch()
+                                    }
+                                    else -> {
+                                        isCameraSelected = true
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                }
                             }
                         ) {
                             Text(text = "Camera ", fontSize = dpToSp(15.dp))
