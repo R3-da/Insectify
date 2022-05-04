@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Insectify</string>
+    <string name="get_started_button">البدء</string>
+    <string name="welcome_top_bar">أهلا بك</string>
+    <string name="language_top_bar">اللغة</string>
+    <string name="continue_button">واصل</string>
+    <string name="gallery_button">معرض</string>
+    <string name="camera_button">كاميرا</string>
+    <string name="predict_button">تنبأ</string>
+</resources>
