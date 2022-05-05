@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">Insectify</string>
-    <string name="title_activity_welcome_compose">WelcomeActivityCompose</string>
-    <string name="title_activity_language_compose">LanguageActivityCompose</string>
+    <string name="app_name" translatable="false">Insectify</string>
+    <string name="get_started_button">GET STARTED</string>
+    <string name="welcome_top_bar">Welcome</string>
+    <string name="language_top_bar">Language</string>
+    <string name="continue_button">CONTINUE</string>
+    <string name="gallery_button">Gallery</string>
+    <string name="camera_button">Camera</string>
+    <string name="predict_button">Predict</string>
 </resources>
