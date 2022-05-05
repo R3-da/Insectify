@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Insectify</string>
+    <string name="get_started_button">COMMENCER</string>
+    <string name="welcome_top_bar">Bienvenu</string>
+    <string name="language_top_bar">Langue</string>
+    <string name="continue_button">CONTINUEZ</string>
+    <string name="gallery_button">Galerie</string>
+    <string name="camera_button">Caméra</string>
+    <string name="predict_button">Prédire</string>
+</resources>
