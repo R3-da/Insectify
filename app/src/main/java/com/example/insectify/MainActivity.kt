@@ -10,7 +10,7 @@ import com.example.insectify.ui.theme.InsectifyTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.time.chrono.JapaneseEra.values
 
-class MainActivity : BaseActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavHostController
     override fun onCreate(savedInstantState: Bundle?) {
         val splashScreen = installSplashScreen()
