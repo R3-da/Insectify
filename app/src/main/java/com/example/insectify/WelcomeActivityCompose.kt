@@ -62,6 +62,7 @@ fun BottomButton(
             else
                 colorResource(R.color.grey),
             finishedListener = {
+                navController.popBackStack()
                 navController.navigate(route = destinationRoute)
             }
         )
