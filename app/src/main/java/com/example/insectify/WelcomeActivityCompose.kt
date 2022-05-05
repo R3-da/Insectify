@@ -42,7 +42,7 @@ fun WelcomeActivityLayout(navController: NavController) {
             ) {
                 BottomButton(navController,
                     buttonText = stringResource(R.string.get_started_button) + " ",
-                    Screen.LanguageScreen.route)
+                    Screen.PredictScreen.route)
             }
         }
     }
