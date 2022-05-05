@@ -1,7 +1,9 @@
 package com.example.insectify
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.textclassifier.TextLanguage
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,9 +35,18 @@ fun LanguageActivityLayout(
 ) {
     var selectedLanguage by remember {mutableStateOf("")}
 
+    when (selectedLanguage) {
+        "English" -> print("English")
+        "Français" -> print("Français")
+        "العربية" -> print("العربية")
+        else -> { // Note the block
+            print("default")
+        }
+    }
+
     MaterialTheme {
         Scaffold(
-            topBar = { TopAppBar(title = {Text("Language")},backgroundColor = colorResource(R.color.blue_light))  },
+            topBar = { TopAppBar(title = {Text(stringResource(R.string.language_top_bar))},backgroundColor = colorResource(R.color.blue_light))  },
             content = {
                 Column (
                     modifier = Modifier
@@ -49,7 +61,7 @@ fun LanguageActivityLayout(
                                 .weight(1f)
                                 .fillMaxSize()
                                 .padding(
-                                    start= 20.dp,
+                                    start = 20.dp,
                                     end = 20.dp,
                                     bottom = 10.dp
                                 ),
@@ -61,7 +73,7 @@ fun LanguageActivityLayout(
                                     .weight(1f)
                                     .fillMaxHeight()
                             ) {
-                                LanguageButton(languageLabel = languageLabel,selectedLanguage.toString()){
+                                LanguageButton(languageLabel = languageLabel,selectedLanguage){
                                     selectedLanguage = it
                                 }
                             }
@@ -82,7 +94,7 @@ fun LanguageActivityLayout(
                     ) {
                         BottomButton(
                             navigator,
-                            buttonText = "CONTINUE",
+                            buttonText = stringResource(id = R.string.continue_button) ,
                             Screen.PredictScreen.route)
                     }
                 }
