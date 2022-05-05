@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextAlign
@@ -187,7 +188,7 @@ fun PredictLayout(navController: NavController) {
                                 }
                             }
                         ) {
-                            Text(text = "Gallery ", fontSize = dpToSp(15.dp))
+                            Text(text = stringResource(R.string.gallery_button) + " ", fontSize = dpToSp(15.dp))
                             Icon(painter = painterResource(R.drawable.ic_outline_photo_library_24) ,contentDescription = "content description")
                         }
                         Button(
@@ -213,7 +214,7 @@ fun PredictLayout(navController: NavController) {
                                 }
                             }
                         ) {
-                            Text(text = "Camera ", fontSize = dpToSp(15.dp))
+                            Text(text = stringResource(R.string.camera_button)+" ", fontSize = dpToSp(15.dp))
                             Icon(painter = painterResource(R.drawable.ic_outline_photo_camera_24),contentDescription = "content description")
                         }
                     }
@@ -243,7 +244,7 @@ fun PredictLayout(navController: NavController) {
                             onClick = {
                             }
                         ) {
-                            Text(text = "Predict", fontSize = dpToSp(15.dp))
+                            Text(text = stringResource(R.string.predict_button) + " ", fontSize = dpToSp(15.dp))
                         }
                         Spacer(
                             modifier = Modifier.weight(0.5f)
