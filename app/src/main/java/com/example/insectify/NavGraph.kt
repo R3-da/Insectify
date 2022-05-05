@@ -17,11 +17,6 @@ fun SetupNavGraph(
             WelcomeActivityLayout(navController)
         }
         composable(
-            route = Screen.LanguageScreen.route
-        ) {
-            LanguageActivityLayout(navController)
-        }
-        composable(
             route = Screen.PredictScreen.route
         ) {
             PredictLayout(navController)
