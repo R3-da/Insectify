@@ -20,6 +20,7 @@ fun DetailsLayout(navController: NavController) {
                         // show drawer icon
                         IconButton(
                             onClick = {
+                                navController.backQueue.clear()
                                 navController.navigate(route = Screen.PredictScreen.route)
                             }
                         ) {
