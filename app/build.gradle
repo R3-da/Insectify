@@ -1,7 +1,17 @@
+buildscript {
+    dependencies {
+        // add plugin
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.28-alpha'
+    }
+}
+
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.devtools.ksp' version '1.6.10-1.0.4' // Depends on your kotlin version
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 kotlin {
@@ -91,4 +101,56 @@ dependencies {
 
 //    implement translation library
     implementation 'com.zeugmasolutions.localehelper:locale-helper-android:1.5.1'
+
+    // Pager and Indicators - Accompanist
+    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
+
+    // DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Dagger - Hilt
+//    implementation "com.google.dagger:hilt-android:2.38.1"
+//    annotationProcessor "com.google.dagger:hilt-android-compiler:2.38.1"
+//    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
+//    //Dagger - Hilt
+//    implementation "com.google.dagger:hilt-android:2.37"
+//    kapt "com.google.dagger:hilt-android-compiler:2.37"
+//    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+//    kapt "androidx.hilt:hilt-compiler:1.0.0-beta01"
+
+//    // Dagger Core
+//    implementation "com.google.dagger:dagger:2.37"
+//    kapt "com.google.dagger:dagger-compiler:2.37"
+//
+//// Dagger Android
+//    api 'com.google.dagger:dagger-android:2.37'
+//    api 'com.google.dagger:dagger-android-support:2.37'
+//    kapt 'com.google.dagger:dagger-android-processor:2.37'
+//
+//// Dagger - Hilt
+//    implementation "com.google.dagger:hilt-android:2.37"
+//    kapt "com.google.dagger:hilt-android-compiler:2.37"
+
+    // dagger
+    implementation 'com.google.dagger:dagger:2.40.5'
+    kapt 'com.google.dagger:dagger-compiler:2.40.5'
+
+// hilt
+//    implementation 'com.google.dagger:hilt-android:2.31.2-alpha'
+//    kapt 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
+//    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
+//    kaptTest 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
+//    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha01'
+//    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha01'
+
+//Dagger - Hilt
+    implementation "com.google.dagger:hilt-android:2.40.5"
+    kapt "com.google.dagger:hilt-android-compiler:2.40.5"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+    kapt "androidx.hilt:hilt-compiler:1.0.0"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
+
 }

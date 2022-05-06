@@ -34,8 +34,9 @@ fun DetailsLayout(navController: NavController) {
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun DetailsScreenPreview() {
     
-}
+}*/
