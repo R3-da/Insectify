@@ -295,10 +295,11 @@ fun PredictLayout(navController: NavController) {
 @Composable
 fun dpToSp(dp: Dp) = with(LocalDensity.current) { dp.toSp() }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun PredictScreenPreview() {
     InsectifyTheme() {
         PredictLayout(navController = rememberNavController())
     }
-}
+}*/
