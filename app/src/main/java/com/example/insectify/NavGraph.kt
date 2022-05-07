@@ -1,7 +1,6 @@
 package com.example.insectify
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,12 +9,7 @@ import androidx.navigation.compose.composable
 fun SetupNavGraph(
     navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = Screen.WelcomeScreen.route) {
-        composable(
-            route = Screen.WelcomeScreen.route
-        ) {
-            WelcomeActivityLayout(navController)
-        }
+    NavHost(navController = navController, startDestination = Screen.PredictScreen.route) {
         composable(
             route = Screen.PredictScreen.route
         ) {
