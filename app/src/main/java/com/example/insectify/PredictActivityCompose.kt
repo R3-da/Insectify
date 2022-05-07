@@ -3,33 +3,25 @@ package com.example.insectify
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.widget.Space
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
-
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -38,27 +30,37 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Button
-import androidx.compose.ui.semantics.Role.Companion.Image
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.insectify.ui.theme.InsectifyTheme
-import kotlinx.coroutines.launch
+import java.io.FileInputStream
+import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.channels.FileChannel
+import com.example.insectify.ml.MobilenetV110224Quant
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 
-
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun PredictLayout(navController: NavController) {
     var isCameraSelected = false
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    val fileName="label.txt"
+    val inputString= LocalContext.current.assets.open(fileName).bufferedReader().use { it.readText() }
+    val townList=inputString.split("\n")
+
+    val model = MobilenetV110224Quant.newInstance(context)
+
+    var max3Ind = mutableStateListOf(0, 0, 0)
+    var max3Score = mutableStateListOf(0.0f, 0.0f, 0.0f)
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -67,7 +69,7 @@ fun PredictLayout(navController: NavController) {
             MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
         } else {
             val source = ImageDecoder.createSource(context.contentResolver, uri!!)
-            ImageDecoder.decodeBitmap(source)
+            ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.ARGB_8888, true)
         }
     }
 
@@ -103,202 +105,271 @@ fun PredictLayout(navController: NavController) {
                             Icon(painterResource(R.drawable.ic_outline_info_24), contentDescription = "")
                         }
                     })
-                     },
-            content = {
-                Column(
+                     }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Spacer(
+                    modifier = Modifier.weight(0.7f)
+                )
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .weight(4f)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Spacer (
-                        modifier = Modifier.weight(0.7f)
+                    Card(
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .padding(
+                                start = 40.dp,
+                                end = 40.dp,
+                                bottom = 10.dp
                             )
-                    Row (
-                       modifier = Modifier
-                           .weight(4f)
-                           .fillMaxWidth(),
-                           horizontalArrangement = Arrangement.Center
-                            ) {
-                        Card(
-                            shape = RoundedCornerShape(20.dp),
+                            .aspectRatio(0.99f)
+                            .fillMaxSize(),
+                        backgroundColor = colorResource(R.color.grey)
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .padding(
-                                    start = 40.dp,
-                                    end = 40.dp,
-                                    bottom = 10.dp
-                                )
-                                .aspectRatio(0.99f)
-                                .fillMaxSize(),
-                            backgroundColor = colorResource(R.color.grey)
+                                .fillMaxSize()
                         ) {
-                           Box(
+                            Icon(
+                                painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
+                                contentDescription = "content description",
                                 modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                Icon(painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
-                                    contentDescription = "content description",
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .alpha(0.1f)
-                                        .fillMaxSize(0.3f)
-                                )
-                            }
-
-                            bitmap?.let { it1 ->
-                                Image(
-                                    contentDescription = null ,
-                                    bitmap = it1.asImageBitmap(),
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-
+                                    .align(Alignment.Center)
+                                    .alpha(0.1f)
+                                    .fillMaxSize(0.3f)
+                            )
                         }
+
+                        bitmap?.let { it1 ->
+                            Image(
+                                contentDescription = null,
+                                bitmap = it1.asImageBitmap(),
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
                     }
-                    Row(
+                }
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(
+                            start = 20.dp,
+                            end = 20.dp,
+                            bottom = 10.dp
+                        )
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = colorResource(R.color.blue_light),
+                            contentColor = Color.Black
+                        ),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                bottom = 10.dp
-                            )
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Button(
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = colorResource(R.color.blue_light),
-                                contentColor = Color.Black
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            onClick = {
-                                when (PackageManager.PERMISSION_GRANTED) {
-                                    ContextCompat.checkSelfPermission(
-                                        context, Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ) -> {
-                                        galleryLauncher.launch("image/*")
-                                    }
-                                    else -> {
-                                        isCameraSelected = false
-                                        permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                    }
-                                }
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.gallery_button) + " ", fontSize = dpToSp(15.dp))
-                            Icon(painter = painterResource(R.drawable.ic_outline_photo_library_24) ,contentDescription = "content description")
-                        }
-                        Button(
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = colorResource(R.color.blue_light),
-                                contentColor = Color.Black
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            onClick = {
-                                when (PackageManager.PERMISSION_GRANTED) {
-                                    ContextCompat.checkSelfPermission(
-                                        context, Manifest.permission.CAMERA
-                                    ) -> {
-                                        cameraLauncher.launch()
-                                    }
-                                    else -> {
-                                        isCameraSelected = true
-                                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                                    }
-                                }
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.camera_button)+" ", fontSize = dpToSp(15.dp))
-                            Icon(painter = painterResource(R.drawable.ic_outline_photo_camera_24),contentDescription = "content description")
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                bottom = 10.dp
-                            )
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Spacer(
-                            modifier = Modifier.weight(0.5f)
-                        )
-                        Button(
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = colorResource(R.color.green_harsh),
-                                contentColor = Color.Black
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            onClick = {
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.predict_button) + " ", fontSize = dpToSp(15.dp))
-                        }
-                        Spacer(
-                            modifier = Modifier.weight(0.5f)
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier.weight(0.3f)
-                    )
-                    Column (
-                        modifier = Modifier
-                            .weight(3f)
                             .fillMaxHeight(),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
+                        onClick = {
+                            when (PackageManager.PERMISSION_GRANTED) {
+                                ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) -> {
+                                    galleryLauncher.launch("image/*")
+                                }
+                                else -> {
+                                    isCameraSelected = false
+                                    permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                }
+                            }
+                        }
+                    ) {
                         Text(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            text = "Prediction : 100%",
-                            fontSize = dpToSp(15.dp),
-                            textAlign = TextAlign.Center
+                            text = stringResource(R.string.gallery_button) + " ",
+                            fontSize = 15.sp
                         )
-                        Spacer(modifier = Modifier
-                            .height(20.dp))
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            text = "Prediction : 100%",
-                            fontSize = dpToSp(15.dp),
-                            textAlign = TextAlign.Center
+                        Icon(
+                            painter = painterResource(R.drawable.ic_outline_photo_library_24),
+                            contentDescription = "content description"
                         )
-                        Spacer(modifier = Modifier
-                            .height(20.dp))
+                    }
+                    Button(
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = colorResource(R.color.blue_light),
+                            contentColor = Color.Black
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        onClick = {
+                            when (PackageManager.PERMISSION_GRANTED) {
+                                ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.CAMERA
+                                ) -> {
+                                    cameraLauncher.launch()
+                                }
+                                else -> {
+                                    isCameraSelected = true
+                                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            }
+                        }
+                    ) {
                         Text(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            text = "Prediction : 100%",
-                            fontSize = dpToSp(15.dp),
-                            textAlign = TextAlign.Center
+                            text = stringResource(R.string.camera_button) + " ",
+                            fontSize = 15.sp
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.ic_outline_photo_camera_24),
+                            contentDescription = "content description"
                         )
                     }
                 }
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(
+                            start = 20.dp,
+                            end = 20.dp,
+                            bottom = 10.dp
+                        )
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Spacer(
+                        modifier = Modifier.weight(0.5f)
+                    )
+                    Button(
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = colorResource(R.color.green_harsh),
+                            contentColor = Color.Black
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        onClick = {
+
+                                var resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
+// Creates inputs for reference.
+                                val inputFeature0 = TensorBuffer.createFixedSize(
+                                    intArrayOf(1, 224, 224, 3),
+                                    DataType.UINT8
+                                )
+                                var tbuffer = TensorImage.fromBitmap(resized)
+                                var byteBuffer = tbuffer.buffer
+                                inputFeature0.loadBuffer(byteBuffer)
+
+// Runs model inference and gets result.
+                                val outputs = model.process(inputFeature0)
+                                val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+                                var outputInd = outputFeature0.floatArray
+
+                                var sum = 0.0f
+                                for (score in outputInd)
+                                    sum += score
+
+                                var max: Int
+                                for (i in 0..2) {
+                                    max = getMax(outputInd)
+                                    max3Ind[i] = max
+                                    max3Score[i] = outputInd[max] / sum
+                                    outputInd[max] = 0.0f
+                                }
+
+                                for (i in 0..2) {
+                                    Log.d("max3Ind", max3Ind[i].toString())
+                                    Log.d("max3Score", max3Score[i].toString())
+                                    Log.d("label", townList[max3Ind[i]])
+                                }
+
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.predict_button) + " ",
+                            fontSize = 15.sp
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier.weight(0.5f)
+                    )
+                }
+                Spacer(
+                    modifier = Modifier.weight(0.3f)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(3f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = townList[max3Ind[0]] + " : " + "%.2f".format(max3Score[0]*100),
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(20.dp)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = townList[max3Ind[1]] + " : " + "%.2f".format(max3Score[1]*100),
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .height(20.dp)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = townList[max3Ind[2]] + " : " + "%.2f".format(max3Score[2]*100),
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
-        )
+        }
     }
 }
 
-@Composable
-fun dpToSp(dp: Dp) = with(LocalDensity.current) { dp.toSp() }
 
-@Preview(showBackground = true)
-@Composable
-fun PredictScreenPreview() {
-    InsectifyTheme() {
-        PredictLayout(navController = rememberNavController())
+@Throws(IOException::class)
+private fun loadModelFile(assetManager: AssetManager, filename: String): ByteBuffer {
+    val fileDescriptor = assetManager.openFd(filename)
+    val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+    val fileChannel = inputStream.channel
+    val startOffset = fileDescriptor.startOffset
+    val declaredLength = fileDescriptor.declaredLength
+    return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+}
+
+fun getMax(arr: FloatArray):Int{
+    var ind=0
+    var min=0.0f
+    for(i in 0..1000){
+        if (arr[i]>min){
+            ind=i
+            min= arr[i]
+        }
     }
+    return  ind
 }
