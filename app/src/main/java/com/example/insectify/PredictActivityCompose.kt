@@ -57,6 +57,8 @@ fun PredictLayout(navController: NavController) {
     val inputString= LocalContext.current.assets.open(fileName).bufferedReader().use { it.readText() }
     val townList=inputString.split("\n")
 
+    var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
+
     val model = MobilenetV110224Quant.newInstance(context)
 
     var max3Ind = mutableStateListOf(0, 0, 0)
@@ -154,7 +156,6 @@ fun PredictLayout(navController: NavController) {
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
-
                     }
                 }
                 Row(
@@ -257,7 +258,7 @@ fun PredictLayout(navController: NavController) {
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-
+                                isPredictClicked = true
                                 var resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
                                 val inputFeature0 = TensorBuffer.createFixedSize(
@@ -312,15 +313,16 @@ fun PredictLayout(navController: NavController) {
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                ) {if(max3Score[0] != 0.0f) {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        text = townList[max3Ind[0]] + " : " + "%.2f".format(max3Score[0]*100),
+                        text = townList[max3Ind[0]] + " : " + "%.2f".format(max3Score[0] * 100) + "%",
                         fontSize = 15.sp,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                if(max3Score[1] != 0.0f) {
                     Spacer(
                         modifier = Modifier
                             .height(20.dp)
@@ -328,11 +330,12 @@ fun PredictLayout(navController: NavController) {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        text = townList[max3Ind[1]] + " : " + "%.2f".format(max3Score[1]*100),
+                        text = townList[max3Ind[1]] + " : " + "%.2f".format(max3Score[1]*100) + "%",
                         fontSize = 15.sp,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                if (max3Score[2] != 0.0f) {
                     Spacer(
                         modifier = Modifier
                             .height(20.dp)
@@ -340,11 +343,29 @@ fun PredictLayout(navController: NavController) {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        text = townList[max3Ind[2]] + " : " + "%.2f".format(max3Score[2]*100),
+                        text = townList[max3Ind[2]] + " : " + "%.2f".format(max3Score[2]*100) + "%",
                         fontSize = 15.sp,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                }
+                }
+
+                }
+                    if (max3Score[0]+max3Score[1]+max3Score[2] != 1.0f && isPredictClicked) {
+                        Spacer(
+                            modifier = Modifier
+                                .height(20.dp)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = "other : " + "%.2f".format(100 - (max3Score[0]*100+max3Score[1]*100+max3Score[2]*100)) + "%",
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
