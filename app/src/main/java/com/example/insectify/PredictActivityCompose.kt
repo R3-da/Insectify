@@ -14,11 +14,17 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -61,24 +67,30 @@ fun PredictLayout(navController: NavController) {
 
     val model = MobilenetV110224Quant.newInstance(context)
 
-    var max3Ind = mutableStateListOf(0, 0, 0)
-    var max3Score = mutableStateListOf(0.0f, 0.0f, 0.0f)
+    var max3Ind = remember { mutableStateListOf<Int?>(null, null, null)}
+    var max3Score = remember { mutableListOf<Float?>(null, null, null)}
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        bitmap = if (Build.VERSION.SDK_INT < 28) {
-            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-        } else {
-            val source = ImageDecoder.createSource(context.contentResolver, uri!!)
-            ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.ARGB_8888, true)
+        if (uri != null) {
+            isPredictClicked = false
+            bitmap = if (Build.VERSION.SDK_INT < 28) {
+                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            } else {
+                val source = ImageDecoder.createSource(context.contentResolver, uri!!)
+                ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.ARGB_8888, true)
+            }
         }
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { btm: Bitmap? ->
-        bitmap = btm
+        if(btm != null) {
+            isPredictClicked = false
+            bitmap = btm
+        }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -137,6 +149,21 @@ fun PredictLayout(navController: NavController) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .clickable {
+                                if (bitmap == null) {
+                                    when (PackageManager.PERMISSION_GRANTED) {
+                                        ContextCompat.checkSelfPermission(
+                                            context, Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) -> {
+                                            galleryLauncher.launch("image/*")
+                                        }
+                                        else -> {
+                                            isCameraSelected = false
+                                            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                        }
+                                    }
+                                }
+                            }
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
@@ -258,6 +285,7 @@ fun PredictLayout(navController: NavController) {
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
+
                                 isPredictClicked = true
                                 var resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
@@ -290,7 +318,7 @@ fun PredictLayout(navController: NavController) {
                                 for (i in 0..2) {
                                     Log.d("max3Ind", max3Ind[i].toString())
                                     Log.d("max3Score", max3Score[i].toString())
-                                    Log.d("label", townList[max3Ind[i]])
+                                    Log.d("label", townList[max3Ind[i]!!])
                                 }
 
                         }
@@ -307,80 +335,88 @@ fun PredictLayout(navController: NavController) {
                 Spacer(
                     modifier = Modifier.weight(0.3f)
                 )
-                Column(
+                Column (
                     modifier = Modifier
                         .weight(3f)
                         .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {if(max3Score[0] != 0.0f) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = townList[max3Ind[0]] + " : " + "%.2f".format(max3Score[0] * 100) + "%",
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                if(max3Score[1] != 0.0f) {
-                    Spacer(
-                        modifier = Modifier
-                            .height(20.dp)
-                    )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = townList[max3Ind[1]] + " : " + "%.2f".format(max3Score[1]*100) + "%",
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                if (max3Score[2] != 0.0f) {
-                    Spacer(
-                        modifier = Modifier
-                            .height(20.dp)
-                    )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = townList[max3Ind[2]] + " : " + "%.2f".format(max3Score[2]*100) + "%",
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                }
-
-                }
-                    if (max3Score[0]+max3Score[1]+max3Score[2] != 1.0f && isPredictClicked) {
-                        Spacer(
+                        ) {
+                    AnimatedVisibility(
+                        visible = isPredictClicked,
+                        enter = fadeIn(animationSpec = tween(durationMillis = 500))
+                    ) {
+                        Column(
                             modifier = Modifier
-                                .height(20.dp)
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            text = "other : " + "%.2f".format(100 - (max3Score[0]*100+max3Score[1]*100+max3Score[2]*100)) + "%",
-                            fontSize = 15.sp,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
-                        )
+                                .weight(3f)
+                                .fillMaxHeight(),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (isPredictClicked) {
+                                if (max3Score[0] != 0.0f) {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        text = townList[max3Ind[0]!!] + " : " + "%.2f".format(
+                                            max3Score[0]!! * 100
+                                        ) + "%",
+                                        fontSize = 15.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    if (max3Score[1] != 0.0f) {
+                                        Spacer(
+                                            modifier = Modifier
+                                                .height(20.dp)
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            text = townList[max3Ind[1]!!] + " : " + "%.2f".format(
+                                                max3Score[1]!! * 100
+                                            ) + "%",
+                                            fontSize = 15.sp,
+                                            textAlign = TextAlign.Center,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        if (max3Score[2] != 0.0f) {
+                                            Spacer(
+                                                modifier = Modifier
+                                                    .height(20.dp)
+                                            )
+                                            Text(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                text = townList[max3Ind[2]!!] + " : " + "%.2f".format(
+                                                    max3Score[2]!! * 100
+                                                ) + "%",
+                                                fontSize = 15.sp,
+                                                textAlign = TextAlign.Center,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+                                if (max3Score[0]!! + max3Score[1]!! + max3Score[2]!! != 1.0f) {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .height(20.dp)
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        text = "other : " + "%.2f".format(100 - (max3Score[0]!! * 100 + max3Score[1]!! * 100 + max3Score[2]!! * 100)) + "%",
+                                        fontSize = 15.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
-}
-
-
-@Throws(IOException::class)
-private fun loadModelFile(assetManager: AssetManager, filename: String): ByteBuffer {
-    val fileDescriptor = assetManager.openFd(filename)
-    val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-    val fileChannel = inputStream.channel
-    val startOffset = fileDescriptor.startOffset
-    val declaredLength = fileDescriptor.declaredLength
-    return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
 }
 
 fun getMax(arr: FloatArray):Int{
