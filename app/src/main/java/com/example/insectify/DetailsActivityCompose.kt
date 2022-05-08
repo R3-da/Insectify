@@ -1,11 +1,22 @@
 package com.example.insectify
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -29,8 +40,134 @@ fun DetailsLayout(navController: NavController) {
                     })
             },
             content = {
-                Text(text = "Hello World !")
+                LazyColumn {
+                    item {
+                        titleItem("App", true)
+                    }
+
+                   item {
+                       listItem(R.drawable.ic_logos_tensorflow, "Model Description",
+                           "This app uses the mobilnet pretrained model which is tweaked to match our app's needs, the database cover up to 250+ insect types.")
+                   }
+
+                    item {
+                        listItem(R.drawable.ic_iconoir_precision_tool,
+                            "Accuracy",
+                            "50%")
+                    }
+
+                    item {
+                        listItem(R.drawable.ic_mdi_target_variant,
+                            "Loss",
+                            "50%")
+                    }
+
+                    item {
+                        listItem(R.drawable.ic_clarity_alert_line,
+                            "About",
+                            "This app should only be used as assistance and not as a concrete scientific reference",
+                        true)
+                    }
+
+                    item {
+                        titleItem("Credits")
+                    }
+
+                    item {
+                        listItem(R.drawable.ic_la_chalkboard_teacher,
+                            "Supervised By",
+                            "Computer science, networks and multimedia 2021-2022 professors, faculty of science and techniques mohammedia, university of hassan 2 casablance.")
+                    }
+
+                    item {
+                        listItem(R.drawable.ic_zondicons_book_reference,
+                            "Reference Github Repositories",
+                            "Implement model : https://www.youtube.com/watch?v=s_XOVkjXQbU.\nCapture and import image : https://github.com/MakeItEasyDev/Jetpack-Compose-Capture-Image-Or-Choose-from-Gallery.")
+                    }
+
+                    item {
+                        listItem(R.drawable.ic_ant_design_database_outlined,
+                            "Database",
+                            "The database is provided by : https://www.kaggle.com/datasets/kmldas/insect-identification-from-habitus-image.\nFor more info about insects visit : https://www.gbif.org/species.")
+                    }
+
+                    item {
+                        listItem(R.drawable.ic_twotone_developer_mode,
+                            "Developed By",
+                            "R3da",
+                        true)
+                    }
+                }
             }
         )
     }
 }
+
+@Composable
+fun listItem(icon : Int, text : String, subText : String?, isLast : Boolean = false) {
+    Row (
+        modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Image(
+            modifier = Modifier.weight(1f),
+            painter = painterResource(icon),
+            contentDescription = "content description"
+        )
+        Column (modifier = Modifier.weight(5f)) {
+
+            Text(
+                text = text,
+                modifier = Modifier
+                .fillMaxWidth(),
+                maxLines = 1,
+                style = MaterialTheme.typography.body1,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+            subText?.let{
+                Text(text = subText, modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, style = MaterialTheme.typography.body2)
+                Spacer(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(15.dp)
+                )
+            }
+            if (!isLast) {
+                Divider(
+                    color = colorResource(R.color.grey),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    thickness = 0.5f.dp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun titleItem(title : String, isFirst : Boolean = false) {
+    if (!isFirst) {
+        Divider(
+            color = colorResource(R.color.grey),
+            modifier = Modifier
+                .fillMaxWidth(),
+            thickness = 0.5f.dp
+        )
+    }
+    Text(modifier = Modifier
+        .fillMaxWidth()
+        .padding(
+            start = 20.dp,
+            top = 15.dp
+        ),
+        text = title,
+        style = MaterialTheme.typography.h2,
+    fontSize = 20.sp,
+    fontWeight = FontWeight.Bold)
+    Spacer(modifier = Modifier
+        .fillMaxWidth()
+        .height(20.dp)
+    )
+}
+
+
