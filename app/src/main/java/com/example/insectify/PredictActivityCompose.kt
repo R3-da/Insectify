@@ -48,6 +48,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import com.example.insectify.ml.MobilenetV110224Quant
+import com.example.insectify.ml.Model
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
@@ -66,6 +67,7 @@ fun PredictLayout(navController: NavController) {
     var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
 
     val model = MobilenetV110224Quant.newInstance(context)
+    val model2 = Model.newInstance(context)
 
     var max3Ind = remember { mutableStateListOf<Int?>(null, null, null)}
     var max3Score = remember { mutableListOf<Float?>(null, null, null)}
@@ -300,6 +302,15 @@ fun PredictLayout(navController: NavController) {
 // Runs model inference and gets result.
                                 val outputs = model.process(inputFeature0)
                                 val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+                                val outputs2 = model2.process(tbuffer).probabilityAsCategoryList.apply {
+                                    sortByDescending { it.score }
+                                }.take(3)
+
+                                for (output in outputs2) {
+                                    Log.d("Label", output.label)
+                                    Log.d("Score", output.score.toString())
+                                }
 
                                 var outputInd = outputFeature0.floatArray
 
