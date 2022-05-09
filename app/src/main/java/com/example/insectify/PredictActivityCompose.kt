@@ -67,8 +67,8 @@ fun PredictLayout(navController: NavController) {
 
     val model2 = Model1.newInstance(context)
 
-    val max3Ind = remember { mutableStateListOf<String?>(null, null, null)}
-    val max3Score = remember { mutableListOf<Float?>(null, null, null)}
+    val max3Ind = remember { mutableStateListOf<String?>(null, null, null, null, null, null, null, null, null, null)}
+    val max3Score = remember { mutableListOf<Float?>(null, null, null, null, null, null, null, null, null, null)}
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -295,7 +295,7 @@ fun PredictLayout(navController: NavController) {
 
                                 val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
-                                }.take(3)
+                                }.take(10)
 
                                 for (i in 0..2) {
                                     max3Ind[i] = outputs[i].label
@@ -401,12 +401,13 @@ fun PredictLayout(navController: NavController) {
 }
 
 @Composable
-fun predictItem(predictString : String) {
-
+fun PredictItem(predictString : String) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
+            .height(10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
             ) {
         Text(modifier = Modifier
             .fillMaxHeight()
@@ -416,10 +417,8 @@ fun predictItem(predictString : String) {
                 top = 15.dp
             ),
             text = predictString,
-            style = MaterialTheme.typography.h2,
-            fontSize = 20.sp,
+            fontSize = 15.sp,
+            textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold)
     }
-
-
 }
