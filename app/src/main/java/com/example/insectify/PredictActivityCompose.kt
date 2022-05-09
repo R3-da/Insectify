@@ -20,6 +20,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,11 +30,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -48,6 +55,9 @@ import java.io.InputStreamReader
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun PredictLayout(navController: NavController) {
+
+    val MAX_RESULTS = 20
+
     var isCameraSelected = false
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -68,8 +78,13 @@ fun PredictLayout(navController: NavController) {
 
     val model2 = Model1.newInstance(context)
 
-    val max3Ind = remember { mutableStateListOf<String?>(null, null, null, null, null, null, null, null, null, null)}
-    val max3Score = remember { mutableListOf<Float?>(null, null, null, null, null, null, null, null, null, null)}
+    val max3Ind = remember { mutableStateListOf<String?>(
+        null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null, null)}
+    val max3Score = remember { mutableListOf<Float?>(
+        null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null, null
+    )}
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -145,7 +160,8 @@ fun PredictLayout(navController: NavController) {
                             )
                             .aspectRatio(0.99f)
                             .fillMaxSize(),
-                        backgroundColor = colorResource(R.color.grey)
+                        backgroundColor = colorResource(R.color.grey),
+                        elevation = 5.dp
                     ) {
                         Box(
                             modifier = Modifier
@@ -203,6 +219,7 @@ fun PredictLayout(navController: NavController) {
                             backgroundColor = colorResource(R.color.blue_light),
                             contentColor = Color.Black
                         ),
+                        elevation = ButtonDefaults.elevation(5.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
@@ -235,6 +252,7 @@ fun PredictLayout(navController: NavController) {
                             backgroundColor = colorResource(R.color.blue_light),
                             contentColor = Color.Black
                         ),
+                        elevation = ButtonDefaults.elevation(5.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
@@ -282,11 +300,12 @@ fun PredictLayout(navController: NavController) {
                             backgroundColor = colorResource(R.color.green_harsh),
                             contentColor = Color.Black
                         ),
+                        elevation = ButtonDefaults.elevation(5.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-
+                            bitmap?.let {
                                 isPredictClicked = true
                                 val resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
@@ -296,12 +315,16 @@ fun PredictLayout(navController: NavController) {
 
                                 val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
-                                }.take(10)
+                                }.take(MAX_RESULTS)
 
-                                for (i in 0..9) {
+                                for (i in 0 until MAX_RESULTS) {
                                     max3Ind[i] = outputs[i].label
                                     max3Score[i] = outputs[i].score
                                 }
+                            } ?: run {
+                                Toast.makeText(context, "Please upload an image !", Toast.LENGTH_SHORT).show()
+                            }
+
 
                         }
                     ) {
@@ -316,7 +339,7 @@ fun PredictLayout(navController: NavController) {
                 }
                 Column (
                     modifier = Modifier
-                        .weight(3f)
+                        .weight(3.3f)
                         .fillMaxHeight(),
                         ) {
                     AnimatedVisibility(
@@ -325,7 +348,7 @@ fun PredictLayout(navController: NavController) {
                     ) {
                         LazyColumn(
                             modifier = Modifier
-                                .weight(3f)
+                                .fillMaxWidth()
                                 .fillMaxHeight(),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -333,14 +356,14 @@ fun PredictLayout(navController: NavController) {
                             if (isPredictClicked) {
 
                                 var sum = 0.0f
-                                for (i in 0..9) {
+                                for (i in 0 until MAX_RESULTS) {
                                     if (max3Score[i] != 0.0f) {
                                         item {
                                             PredictItem(
                                                 predictString = insectsLabels[max3Ind[i].toString()] as String + " : " + "%.2f".format(
                                                     max3Score[i]!! * 100
                                                 ) + "%"
-                                            )
+                                            , max3Ind[i].toString())
                                         }
                                         sum += max3Score[i]!!.toFloat()
                                     } else {
@@ -357,13 +380,11 @@ fun PredictLayout(navController: NavController) {
                                         Text(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            text = "other : " + "%.2f".format(100 - sum * 100) + "%",
+                                            text = "others : " + "%.2f".format(100 - sum * 100) + "%",
                                             fontSize = 15.sp,
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Bold
+                                            textAlign = TextAlign.Center
                                         )
                                     }
-
                                 }
                             }
                         }
@@ -375,7 +396,8 @@ fun PredictLayout(navController: NavController) {
 }
 
 @Composable
-fun PredictItem(predictString : String) {
+fun PredictItem(predictString : String, insectId : String) {
+
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -383,16 +405,54 @@ fun PredictItem(predictString : String) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
             ) {
-        Text(modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f)
-            .padding(
-                start = 20.dp,
-                top = 15.dp
-            ),
-            text = predictString,
-            fontSize = 15.sp,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold)
+        val annotatedLinkString: AnnotatedString = buildAnnotatedString {
+
+            val str = predictString
+            val startIndex = 0
+            val endIndex = str.indexOf(":") - 1
+            append(str)
+            addStyle(
+                style = SpanStyle(
+                    color = Color(0xff64B5F6),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline,
+                ), start = startIndex, end = endIndex
+            )
+
+            // attach a string annotation that stores a URL to the text "link"
+            addStringAnnotation(
+                tag = "URL",
+                annotation = "https://www.gbif.org/species/$insectId",
+                start = startIndex,
+                end = endIndex
+            )
+
+        }
+
+// UriHandler parse and opens URI inside AnnotatedString Item in Browse
+        val uriHandler = LocalUriHandler.current
+
+// 🔥 Clickable text returns position of text that is clicked in onClick callback
+        ClickableText(
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    start = 20.dp,
+                    top = 15.dp
+                )
+                .fillMaxHeight(),
+            text = annotatedLinkString,
+            style = TextStyle(
+                textAlign = TextAlign.Center),
+            onClick = {
+                annotatedLinkString
+                    .getStringAnnotations("URL", it, it)
+                    .firstOrNull()?.let { stringAnnotation ->
+                        uriHandler.openUri(stringAnnotation.item)
+                    }
+            }
+        )
     }
 }
+
