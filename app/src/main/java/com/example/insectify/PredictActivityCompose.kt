@@ -8,7 +8,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,13 +51,9 @@ fun PredictLayout(navController: NavController) {
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    val fileName="label.txt"
-    val inputString= LocalContext.current.assets.open(fileName).bufferedReader().use { it.readText() }
-    val townList=inputString.split("\n")
-
     val inputStream = LocalContext.current.assets.open("insectsDict.json")
     val bR = BufferedReader(InputStreamReader(inputStream))
-    var line: String? = ""
+    var line: String?
 
     val responseStrBuilder = StringBuilder()
     while (bR.readLine().also { line = it } != null) {
@@ -68,15 +63,12 @@ fun PredictLayout(navController: NavController) {
 
     val insectsLabels = JSONObject(responseStrBuilder.toString())
 
-    Log.d("result", insectsLabels["5757120"] as String)
+    var isPredictClicked by remember {mutableStateOf(false)}
 
-    var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
-
-    val model = MobilenetV110224Quant.newInstance(context)
     val model2 = Model1.newInstance(context)
 
-    var max3Ind = remember { mutableStateListOf<String?>(null, null, null)}
-    var max3Score = remember { mutableListOf<Float?>(null, null, null)}
+    val max3Ind = remember { mutableStateListOf<String?>(null, null, null)}
+    val max3Score = remember { mutableListOf<Float?>(null, null, null)}
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -86,7 +78,7 @@ fun PredictLayout(navController: NavController) {
             bitmap = if (Build.VERSION.SDK_INT < 28) {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             } else {
-                val source = ImageDecoder.createSource(context.contentResolver, uri!!)
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
                 ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.ARGB_8888, true)
             }
         }
@@ -295,13 +287,13 @@ fun PredictLayout(navController: NavController) {
                         onClick = {
 
                                 isPredictClicked = true
-                                var resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
+                                val resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
-                                var tbuffer = TensorImage.fromBitmap(resized)
+                                val tBuffer = TensorImage.fromBitmap(resized)
 
 // Runs model inference and gets result.
 
-                                val outputs = model2.process(tbuffer).probabilityAsCategoryList.apply {
+                                val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
                                 }.take(3)
 
@@ -345,7 +337,7 @@ fun PredictLayout(navController: NavController) {
                                     Text(
                                         modifier = Modifier
                                             .fillMaxWidth(),
-                                        text = insectsLabels[max3Ind[0]] as String + " : " + "%.2f".format(
+                                        text = insectsLabels[max3Ind[0].toString()] as String + " : " + "%.2f".format(
                                             max3Score[0]!! * 100
                                         ) + "%",
                                         fontSize = 15.sp,
@@ -360,7 +352,7 @@ fun PredictLayout(navController: NavController) {
                                         Text(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            text = insectsLabels[max3Ind[1]] as String + " : " + "%.2f".format(
+                                            text = insectsLabels[max3Ind[1].toString()] as String + " : " + "%.2f".format(
                                                 max3Score[1]!! * 100
                                             ) + "%",
                                             fontSize = 15.sp,
@@ -375,7 +367,7 @@ fun PredictLayout(navController: NavController) {
                                             Text(
                                                 modifier = Modifier
                                                     .fillMaxWidth(),
-                                                text = insectsLabels[max3Ind[2]] as String + " : " + "%.2f".format(
+                                                text = insectsLabels[max3Ind[2].toString()] as String + " : " + "%.2f".format(
                                                     max3Score[2]!! * 100
                                                 ) + "%",
                                                 fontSize = 15.sp,
@@ -406,16 +398,4 @@ fun PredictLayout(navController: NavController) {
             }
         }
     }
-}
-
-fun getMax(arr: FloatArray):Int{
-    var ind=0
-    var min=0.0f
-    for(i in 0..1000){
-        if (arr[i]>min){
-            ind=i
-            min= arr[i]
-        }
-    }
-    return  ind
 }
