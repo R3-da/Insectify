@@ -401,27 +401,21 @@ fun PredictLayout(navController: NavController) {
 }
 
 @Composable
-fun predictItem(label : String, percentage : String) {
+fun predictItem(predictString : String) {
 
-    Row () {
-        Text(modifier = Modifier
+    Row (
+        modifier = Modifier
             .fillMaxWidth()
+            .height(10.dp)
+            ) {
+        Text(modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
             .padding(
                 start = 20.dp,
                 top = 15.dp
             ),
-            text = label,
-            style = MaterialTheme.typography.h2,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold)
-
-        Text(modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 20.dp,
-                top = 15.dp
-            ),
-            text = percentage,
+            text = predictString,
             style = MaterialTheme.typography.h2,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold)
