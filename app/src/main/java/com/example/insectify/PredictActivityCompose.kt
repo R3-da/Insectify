@@ -48,6 +48,9 @@ import java.io.InputStreamReader
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun PredictLayout(navController: NavController) {
+
+    val MAX_RESULTS = 20
+
     var isCameraSelected = false
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -68,8 +71,13 @@ fun PredictLayout(navController: NavController) {
 
     val model2 = Model1.newInstance(context)
 
-    val max3Ind = remember { mutableStateListOf<String?>(null, null, null, null, null, null, null, null, null, null)}
-    val max3Score = remember { mutableListOf<Float?>(null, null, null, null, null, null, null, null, null, null)}
+    val max3Ind = remember { mutableStateListOf<String?>(
+        null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null, null)}
+    val max3Score = remember { mutableListOf<Float?>(
+        null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null, null
+    )}
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -145,7 +153,8 @@ fun PredictLayout(navController: NavController) {
                             )
                             .aspectRatio(0.99f)
                             .fillMaxSize(),
-                        backgroundColor = colorResource(R.color.grey)
+                        backgroundColor = colorResource(R.color.grey),
+                        elevation = 5.dp
                     ) {
                         Box(
                             modifier = Modifier
@@ -203,6 +212,7 @@ fun PredictLayout(navController: NavController) {
                             backgroundColor = colorResource(R.color.blue_light),
                             contentColor = Color.Black
                         ),
+                        elevation = ButtonDefaults.elevation(5.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
@@ -235,6 +245,7 @@ fun PredictLayout(navController: NavController) {
                             backgroundColor = colorResource(R.color.blue_light),
                             contentColor = Color.Black
                         ),
+                        elevation = ButtonDefaults.elevation(5.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
@@ -282,6 +293,7 @@ fun PredictLayout(navController: NavController) {
                             backgroundColor = colorResource(R.color.green_harsh),
                             contentColor = Color.Black
                         ),
+                        elevation = ButtonDefaults.elevation(5.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
@@ -296,9 +308,9 @@ fun PredictLayout(navController: NavController) {
 
                                 val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
-                                }.take(10)
+                                }.take(MAX_RESULTS)
 
-                                for (i in 0..9) {
+                                for (i in 0 until MAX_RESULTS) {
                                     max3Ind[i] = outputs[i].label
                                     max3Score[i] = outputs[i].score
                                 }
@@ -316,7 +328,7 @@ fun PredictLayout(navController: NavController) {
                 }
                 Column (
                     modifier = Modifier
-                        .weight(3f)
+                        .weight(3.3f)
                         .fillMaxHeight(),
                         ) {
                     AnimatedVisibility(
@@ -325,7 +337,7 @@ fun PredictLayout(navController: NavController) {
                     ) {
                         LazyColumn(
                             modifier = Modifier
-                                .weight(3f)
+                                .fillMaxWidth()
                                 .fillMaxHeight(),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -333,7 +345,7 @@ fun PredictLayout(navController: NavController) {
                             if (isPredictClicked) {
 
                                 var sum = 0.0f
-                                for (i in 0..9) {
+                                for (i in 0 until MAX_RESULTS) {
                                     if (max3Score[i] != 0.0f) {
                                         item {
                                             PredictItem(
@@ -363,7 +375,6 @@ fun PredictLayout(navController: NavController) {
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
-
                                 }
                             }
                         }
