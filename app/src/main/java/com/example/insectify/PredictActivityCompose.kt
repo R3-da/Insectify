@@ -57,7 +57,19 @@ fun PredictLayout(navController: NavController) {
     val inputString= LocalContext.current.assets.open(fileName).bufferedReader().use { it.readText() }
     val townList=inputString.split("\n")
 
+    val inputStream = LocalContext.current.assets.open("insectsDict.json")
+    val bR = BufferedReader(InputStreamReader(inputStream))
+    var line: String? = ""
 
+    val responseStrBuilder = StringBuilder()
+    while (bR.readLine().also { line = it } != null) {
+        responseStrBuilder.append(line)
+    }
+    inputStream.close()
+
+    val result = JSONObject(responseStrBuilder.toString())
+
+    Log.d("result", result["5757120"] as String)
 
     var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
 
