@@ -438,8 +438,7 @@ fun PredictItem(predictString : String, insectId : String) {
             modifier = Modifier
                 .weight(1f)
                 .padding(
-                    start = 20.dp,
-                    top = 15.dp
+                    top = 10.dp
                 )
                 .fillMaxHeight(),
             text = annotatedLinkString,
