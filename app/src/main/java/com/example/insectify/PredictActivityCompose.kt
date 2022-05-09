@@ -20,6 +20,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,11 +30,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -356,7 +363,7 @@ fun PredictLayout(navController: NavController) {
                                                 predictString = insectsLabels[max3Ind[i].toString()] as String + " : " + "%.2f".format(
                                                     max3Score[i]!! * 100
                                                 ) + "%"
-                                            )
+                                            , max3Ind[i].toString())
                                         }
                                         sum += max3Score[i]!!.toFloat()
                                     } else {
@@ -373,7 +380,7 @@ fun PredictLayout(navController: NavController) {
                                         Text(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            text = "other : " + "%.2f".format(100 - sum * 100) + "%",
+                                            text = "others : " + "%.2f".format(100 - sum * 100) + "%",
                                             fontSize = 15.sp,
                                             textAlign = TextAlign.Center,
                                             fontWeight = FontWeight.Bold
@@ -390,7 +397,8 @@ fun PredictLayout(navController: NavController) {
 }
 
 @Composable
-fun PredictItem(predictString : String) {
+fun PredictItem(predictString : String, insectId : String) {
+
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -398,16 +406,54 @@ fun PredictItem(predictString : String) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
             ) {
-        Text(modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f)
-            .padding(
-                start = 20.dp,
-                top = 15.dp
-            ),
-            text = predictString,
-            fontSize = 15.sp,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold)
+        val annotatedLinkString: AnnotatedString = buildAnnotatedString {
+
+            val str = predictString
+            val startIndex = 0
+            val endIndex = str.indexOf(":") - 1
+            append(str)
+            addStyle(
+                style = SpanStyle(
+                    color = Color(0xff64B5F6),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline,
+                ), start = startIndex, end = endIndex
+            )
+
+            // attach a string annotation that stores a URL to the text "link"
+            addStringAnnotation(
+                tag = "URL",
+                annotation = "https://www.gbif.org/species/$insectId",
+                start = startIndex,
+                end = endIndex
+            )
+
+        }
+
+// UriHandler parse and opens URI inside AnnotatedString Item in Browse
+        val uriHandler = LocalUriHandler.current
+
+// 🔥 Clickable text returns position of text that is clicked in onClick callback
+        ClickableText(
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    start = 20.dp,
+                    top = 15.dp
+                )
+                .fillMaxHeight(),
+            text = annotatedLinkString,
+            style = TextStyle(
+                textAlign = TextAlign.Center),
+            onClick = {
+                annotatedLinkString
+                    .getStringAnnotations("URL", it, it)
+                    .firstOrNull()?.let { stringAnnotation ->
+                        uriHandler.openUri(stringAnnotation.item)
+                    }
+            }
+        )
     }
 }
+
