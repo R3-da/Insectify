@@ -3,7 +3,6 @@ package com.example.insectify
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -17,14 +16,12 @@ import androidx.activity.result.launch
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,26 +29,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import java.io.FileInputStream
-import java.io.IOException
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
 import com.example.insectify.ml.MobilenetV110224Quant
-import com.example.insectify.ml.Model
-import org.tensorflow.lite.DataType
+import com.example.insectify.ml.Model1
+import org.json.JSONObject
 import org.tensorflow.lite.support.image.TensorImage
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
@@ -64,12 +57,14 @@ fun PredictLayout(navController: NavController) {
     val inputString= LocalContext.current.assets.open(fileName).bufferedReader().use { it.readText() }
     val townList=inputString.split("\n")
 
+
+
     var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
 
     val model = MobilenetV110224Quant.newInstance(context)
-    val model2 = Model.newInstance(context)
+    val model2 = Model1.newInstance(context)
 
-    var max3Ind = remember { mutableStateListOf<Int?>(null, null, null)}
+    var max3Ind = remember { mutableStateListOf<String?>(null, null, null)}
     var max3Score = remember { mutableListOf<Float?>(null, null, null)}
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -152,20 +147,20 @@ fun PredictLayout(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clickable {
-                                if (bitmap == null) {
-                                    when (PackageManager.PERMISSION_GRANTED) {
-                                        ContextCompat.checkSelfPermission(
-                                            context, Manifest.permission.READ_EXTERNAL_STORAGE
-                                        ) -> {
-                                            galleryLauncher.launch("image/*")
-                                        }
-                                        else -> {
-                                            isCameraSelected = false
-                                            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    if (bitmap == null) {
+                                        when (PackageManager.PERMISSION_GRANTED) {
+                                            ContextCompat.checkSelfPermission(
+                                                context, Manifest.permission.READ_EXTERNAL_STORAGE
+                                            ) -> {
+                                                galleryLauncher.launch("image/*")
+                                            }
+                                            else -> {
+                                                isCameraSelected = false
+                                                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                            }
                                         }
                                     }
                                 }
-                            }
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
@@ -291,45 +286,17 @@ fun PredictLayout(navController: NavController) {
                                 isPredictClicked = true
                                 var resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
-                                val inputFeature0 = TensorBuffer.createFixedSize(
-                                    intArrayOf(1, 224, 224, 3),
-                                    DataType.UINT8
-                                )
                                 var tbuffer = TensorImage.fromBitmap(resized)
-                                var byteBuffer = tbuffer.buffer
-                                inputFeature0.loadBuffer(byteBuffer)
 
 // Runs model inference and gets result.
-                                val outputs = model.process(inputFeature0)
-                                val outputFeature0 = outputs.outputFeature0AsTensorBuffer
 
-                                val outputs2 = model2.process(tbuffer).probabilityAsCategoryList.apply {
+                                val outputs = model2.process(tbuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
                                 }.take(3)
 
-                                for (output in outputs2) {
-                                    Log.d("Label", output.label)
-                                    Log.d("Score", output.score.toString())
-                                }
-
-                                var outputInd = outputFeature0.floatArray
-
-                                var sum = 0.0f
-                                for (score in outputInd)
-                                    sum += score
-
-                                var max: Int
                                 for (i in 0..2) {
-                                    max = getMax(outputInd)
-                                    max3Ind[i] = max
-                                    max3Score[i] = outputInd[max] / sum
-                                    outputInd[max] = 0.0f
-                                }
-
-                                for (i in 0..2) {
-                                    Log.d("max3Ind", max3Ind[i].toString())
-                                    Log.d("max3Score", max3Score[i].toString())
-                                    Log.d("label", townList[max3Ind[i]!!])
+                                    max3Ind[i] = outputs[i].label
+                                    max3Score[i] = outputs[i].score
                                 }
 
                         }
@@ -367,7 +334,7 @@ fun PredictLayout(navController: NavController) {
                                     Text(
                                         modifier = Modifier
                                             .fillMaxWidth(),
-                                        text = townList[max3Ind[0]!!] + " : " + "%.2f".format(
+                                        text = max3Ind[0] + " : " + "%.2f".format(
                                             max3Score[0]!! * 100
                                         ) + "%",
                                         fontSize = 15.sp,
@@ -382,7 +349,7 @@ fun PredictLayout(navController: NavController) {
                                         Text(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            text = townList[max3Ind[1]!!] + " : " + "%.2f".format(
+                                            text = max3Ind[1] + " : " + "%.2f".format(
                                                 max3Score[1]!! * 100
                                             ) + "%",
                                             fontSize = 15.sp,
@@ -397,7 +364,7 @@ fun PredictLayout(navController: NavController) {
                                             Text(
                                                 modifier = Modifier
                                                     .fillMaxWidth(),
-                                                text = townList[max3Ind[2]!!] + " : " + "%.2f".format(
+                                                text = max3Ind[2] + " : " + "%.2f".format(
                                                     max3Score[2]!! * 100
                                                 ) + "%",
                                                 fontSize = 15.sp,
