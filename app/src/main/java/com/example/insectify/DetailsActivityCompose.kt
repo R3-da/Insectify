@@ -53,13 +53,13 @@ fun DetailsLayout(navController: NavController) {
                     item {
                         listItem(R.drawable.ic_iconoir_precision_tool,
                             "Accuracy",
-                            "50%")
+                            "55.78%")
                     }
 
                     item {
                         listItem(R.drawable.ic_mdi_target_variant,
                             "Loss",
-                            "50%")
+                            "2.7908")
                     }
 
                     item {
