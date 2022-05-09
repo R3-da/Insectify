@@ -8,7 +8,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +18,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.example.insectify.ml.MobilenetV110224Quant
 import com.example.insectify.ml.Model1
 import org.json.JSONObject
 import org.tensorflow.lite.support.image.TensorImage
@@ -53,13 +52,9 @@ fun PredictLayout(navController: NavController) {
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    val fileName="label.txt"
-    val inputString= LocalContext.current.assets.open(fileName).bufferedReader().use { it.readText() }
-    val townList=inputString.split("\n")
-
     val inputStream = LocalContext.current.assets.open("insectsDict.json")
     val bR = BufferedReader(InputStreamReader(inputStream))
-    var line: String? = ""
+    var line: String?
 
     val responseStrBuilder = StringBuilder()
     while (bR.readLine().also { line = it } != null) {
@@ -69,15 +64,12 @@ fun PredictLayout(navController: NavController) {
 
     val insectsLabels = JSONObject(responseStrBuilder.toString())
 
-    Log.d("result", insectsLabels["5757120"] as String)
+    var isPredictClicked by remember {mutableStateOf(false)}
 
-    var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
-
-    val model = MobilenetV110224Quant.newInstance(context)
     val model2 = Model1.newInstance(context)
 
-    var max3Ind = remember { mutableStateListOf<String?>(null, null, null)}
-    var max3Score = remember { mutableListOf<Float?>(null, null, null)}
+    val max3Ind = remember { mutableStateListOf<String?>(null, null, null, null, null, null, null, null, null, null)}
+    val max3Score = remember { mutableListOf<Float?>(null, null, null, null, null, null, null, null, null, null)}
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -87,7 +79,7 @@ fun PredictLayout(navController: NavController) {
             bitmap = if (Build.VERSION.SDK_INT < 28) {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             } else {
-                val source = ImageDecoder.createSource(context.contentResolver, uri!!)
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
                 ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.ARGB_8888, true)
             }
         }
@@ -296,17 +288,17 @@ fun PredictLayout(navController: NavController) {
                         onClick = {
 
                                 isPredictClicked = true
-                                var resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
+                                val resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
-                                var tbuffer = TensorImage.fromBitmap(resized)
+                                val tBuffer = TensorImage.fromBitmap(resized)
 
 // Runs model inference and gets result.
 
-                                val outputs = model2.process(tbuffer).probabilityAsCategoryList.apply {
+                                val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
-                                }.take(3)
+                                }.take(10)
 
-                                for (i in 0..2) {
+                                for (i in 0..9) {
                                     max3Ind[i] = outputs[i].label
                                     max3Score[i] = outputs[i].score
                                 }
@@ -322,9 +314,6 @@ fun PredictLayout(navController: NavController) {
                         modifier = Modifier.weight(0.5f)
                     )
                 }
-                Spacer(
-                    modifier = Modifier.weight(0.3f)
-                )
                 Column (
                     modifier = Modifier
                         .weight(3f)
@@ -334,7 +323,7 @@ fun PredictLayout(navController: NavController) {
                         visible = isPredictClicked,
                         enter = fadeIn(animationSpec = tween(durationMillis = 500))
                     ) {
-                        Column(
+                        LazyColumn(
                             modifier = Modifier
                                 .weight(3f)
                                 .fillMaxHeight(),
@@ -342,18 +331,25 @@ fun PredictLayout(navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             if (isPredictClicked) {
-                                if (max3Score[0] != 0.0f) {
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        text = insectsLabels[max3Ind[0]] as String + " : " + "%.2f".format(
-                                            max3Score[0]!! * 100
-                                        ) + "%",
-                                        fontSize = 15.sp,
-                                        textAlign = TextAlign.Center,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    if (max3Score[1] != 0.0f) {
+
+                                var sum = 0.0f
+                                for (i in 0..9) {
+                                    if (max3Score[i] != 0.0f) {
+                                        item {
+                                            PredictItem(
+                                                predictString = insectsLabels[max3Ind[i].toString()] as String + " : " + "%.2f".format(
+                                                    max3Score[i]!! * 100
+                                                ) + "%"
+                                            )
+                                        }
+                                        sum += max3Score[i]!!.toFloat()
+                                    } else {
+                                        break
+                                    }
+                                }
+                                if (sum != 1.0f) {
+
+                                    item {
                                         Spacer(
                                             modifier = Modifier
                                                 .height(20.dp)
@@ -361,44 +357,13 @@ fun PredictLayout(navController: NavController) {
                                         Text(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            text = insectsLabels[max3Ind[1]] as String + " : " + "%.2f".format(
-                                                max3Score[1]!! * 100
-                                            ) + "%",
+                                            text = "other : " + "%.2f".format(100 - sum * 100) + "%",
                                             fontSize = 15.sp,
                                             textAlign = TextAlign.Center,
                                             fontWeight = FontWeight.Bold
                                         )
-                                        if (max3Score[2] != 0.0f) {
-                                            Spacer(
-                                                modifier = Modifier
-                                                    .height(20.dp)
-                                            )
-                                            Text(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(),
-                                                text = insectsLabels[max3Ind[2]] as String + " : " + "%.2f".format(
-                                                    max3Score[2]!! * 100
-                                                ) + "%",
-                                                fontSize = 15.sp,
-                                                textAlign = TextAlign.Center,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
                                     }
-                                }
-                                if (max3Score[0]!! + max3Score[1]!! + max3Score[2]!! != 1.0f) {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .height(20.dp)
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        text = "other : " + "%.2f".format(100 - (max3Score[0]!! * 100 + max3Score[1]!! * 100 + max3Score[2]!! * 100)) + "%",
-                                        fontSize = 15.sp,
-                                        textAlign = TextAlign.Center,
-                                        fontWeight = FontWeight.Bold
-                                    )
+
                                 }
                             }
                         }
@@ -409,14 +374,25 @@ fun PredictLayout(navController: NavController) {
     }
 }
 
-fun getMax(arr: FloatArray):Int{
-    var ind=0
-    var min=0.0f
-    for(i in 0..1000){
-        if (arr[i]>min){
-            ind=i
-            min= arr[i]
-        }
+@Composable
+fun PredictItem(predictString : String) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+            ) {
+        Text(modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
+            .padding(
+                start = 20.dp,
+                top = 15.dp
+            ),
+            text = predictString,
+            fontSize = 15.sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold)
     }
-    return  ind
 }
