@@ -298,7 +298,7 @@ fun PredictLayout(navController: NavController) {
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-
+                            bitmap?.let {
                                 isPredictClicked = true
                                 val resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
 // Creates inputs for reference.
@@ -314,6 +314,10 @@ fun PredictLayout(navController: NavController) {
                                     max3Ind[i] = outputs[i].label
                                     max3Score[i] = outputs[i].score
                                 }
+                            } ?: run {
+                                Toast.makeText(context, "Please upload an image !", Toast.LENGTH_SHORT).show()
+                            }
+
 
                         }
                     ) {
