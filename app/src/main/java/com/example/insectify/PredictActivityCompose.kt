@@ -45,7 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.example.insectify.ml.Model1
+import com.reda.insectify.ml.Model
+import com.reda.insectify.R
 import org.json.JSONObject
 import org.tensorflow.lite.support.image.TensorImage
 import java.io.BufferedReader
@@ -76,7 +77,7 @@ fun PredictLayout(navController: NavController) {
 
     var isPredictClicked by remember {mutableStateOf(false)}
 
-    val model2 = Model1.newInstance(context)
+    val model = Model.newInstance(context)
 
     val max3Ind = remember { mutableStateListOf<String?>(
         null, null, null, null, null, null, null, null, null, null,
@@ -313,7 +314,7 @@ fun PredictLayout(navController: NavController) {
 
 // Runs model inference and gets result.
 
-                                val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
+                                val outputs = model.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
                                 }.take(MAX_RESULTS)
 
