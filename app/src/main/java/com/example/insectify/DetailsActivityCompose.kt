@@ -106,11 +106,11 @@ fun DetailsLayout(navController: NavController) {
 @Composable
 fun listItem(icon : Int, text : String, subText : String?, isLast : Boolean = false) {
     Row (
-        modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         verticalAlignment = Alignment.Top
     ) {
         Image(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).padding(start = 14.dp, end = 14.dp),
             painter = painterResource(icon),
             contentDescription = "content description"
         )
@@ -121,15 +121,14 @@ fun listItem(icon : Int, text : String, subText : String?, isLast : Boolean = fa
                 modifier = Modifier
                 .fillMaxWidth(),
                 maxLines = 1,
-                style = MaterialTheme.typography.body1,
-                fontSize = 20.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             )
             subText?.let{
-                Text(text = subText, modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, style = MaterialTheme.typography.body2)
+                Text(text = subText, modifier = Modifier.fillMaxWidth(), fontSize = 15.sp, style = MaterialTheme.typography.body2)
                 Spacer(modifier = Modifier
                     .fillMaxWidth()
-                    .height(15.dp)
+                    .height(8.dp)
                 )
             }
             if (!isLast) {
@@ -158,15 +157,14 @@ fun titleItem(title : String, isFirst : Boolean = false) {
         .fillMaxWidth()
         .padding(
             start = 20.dp,
-            top = 15.dp
+            top = 10.dp
         ),
         text = title,
-        style = MaterialTheme.typography.h2,
-    fontSize = 20.sp,
+    fontSize = 13.sp,
     fontWeight = FontWeight.Bold)
     Spacer(modifier = Modifier
         .fillMaxWidth()
-        .height(20.dp)
+        .height(9.dp)
     )
 }
 
