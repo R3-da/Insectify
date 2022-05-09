@@ -47,7 +47,7 @@ fun DetailsLayout(navController: NavController) {
 
                    item {
                        listItem(R.drawable.ic_logos_tensorflow, "Model Description",
-                           "This app uses the mobilnet pretrained model which is tweaked to match our app's needs, the database cover up to 250+ insect types.")
+                           "This app uses mobilnet pretrained model which is tweaked to match our app's needs, the database covers 291 insect types.")
                    }
 
                     item {
@@ -65,7 +65,7 @@ fun DetailsLayout(navController: NavController) {
                     item {
                         listItem(R.drawable.ic_clarity_alert_line,
                             "About",
-                            "This app should only be used as assistance and not as a concrete scientific reference",
+                            "This app should only be used as assistance and not as a concrete scientific reference.",
                         true)
                     }
 
@@ -74,9 +74,9 @@ fun DetailsLayout(navController: NavController) {
                     }
 
                     item {
-                        listItem(R.drawable.ic_la_chalkboard_teacher,
+                        listItem(R.drawable.ic_univ,
                             "Supervised By",
-                            "Computer science, networks and multimedia 2021-2022 professors, faculty of science and techniques mohammedia, university of hassan 2 casablance.")
+                            "Computer science, networks and multimedia 2021-2022 professors, faculty of science and techniques mohammedia, university of hassan 2 casablanca.")
                     }
 
                     item {
@@ -94,7 +94,7 @@ fun DetailsLayout(navController: NavController) {
                     item {
                         listItem(R.drawable.ic_twotone_developer_mode,
                             "Developed By",
-                            "R3da",
+                            "R3da.",
                         true)
                     }
                 }
@@ -121,11 +121,11 @@ fun listItem(icon : Int, text : String, subText : String?, isLast : Boolean = fa
                 modifier = Modifier
                 .fillMaxWidth(),
                 maxLines = 1,
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
             subText?.let{
-                Text(text = subText, modifier = Modifier.fillMaxWidth(), fontSize = 15.sp, style = MaterialTheme.typography.body2)
+                Text(text = subText, modifier = Modifier.fillMaxWidth(), fontSize = 13.sp, style = MaterialTheme.typography.body2)
                 Spacer(modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
