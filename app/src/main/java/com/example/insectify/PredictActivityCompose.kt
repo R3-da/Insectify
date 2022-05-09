@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.example.insectify.ml.MobilenetV110224Quant
 import com.example.insectify.ml.Model1
 import org.json.JSONObject
 import org.tensorflow.lite.support.image.TensorImage
