@@ -399,3 +399,33 @@ fun PredictLayout(navController: NavController) {
         }
     }
 }
+
+@Composable
+fun predictItem(label : String, percentage : String) {
+
+    Row () {
+        Text(modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 20.dp,
+                top = 15.dp
+            ),
+            text = label,
+            style = MaterialTheme.typography.h2,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold)
+
+        Text(modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 20.dp,
+                top = 15.dp
+            ),
+            text = percentage,
+            style = MaterialTheme.typography.h2,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold)
+    }
+
+
+}
