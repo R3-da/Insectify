@@ -382,8 +382,7 @@ fun PredictLayout(navController: NavController) {
                                                 .fillMaxWidth(),
                                             text = "others : " + "%.2f".format(100 - sum * 100) + "%",
                                             fontSize = 15.sp,
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Bold
+                                            textAlign = TextAlign.Center
                                         )
                                     }
                                 }
