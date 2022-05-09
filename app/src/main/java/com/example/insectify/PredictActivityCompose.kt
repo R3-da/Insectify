@@ -67,9 +67,9 @@ fun PredictLayout(navController: NavController) {
     }
     inputStream.close()
 
-    val result = JSONObject(responseStrBuilder.toString())
+    val insectsLabels = JSONObject(responseStrBuilder.toString())
 
-    Log.d("result", result["5757120"] as String)
+    Log.d("result", insectsLabels["5757120"] as String)
 
     var isPredictClicked by remember {mutableStateOf<Boolean>(false)}
 
@@ -346,7 +346,7 @@ fun PredictLayout(navController: NavController) {
                                     Text(
                                         modifier = Modifier
                                             .fillMaxWidth(),
-                                        text = max3Ind[0] + " : " + "%.2f".format(
+                                        text = insectsLabels[max3Ind[0]] as String + " : " + "%.2f".format(
                                             max3Score[0]!! * 100
                                         ) + "%",
                                         fontSize = 15.sp,
@@ -361,7 +361,7 @@ fun PredictLayout(navController: NavController) {
                                         Text(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            text = max3Ind[1] + " : " + "%.2f".format(
+                                            text = insectsLabels[max3Ind[1]] as String + " : " + "%.2f".format(
                                                 max3Score[1]!! * 100
                                             ) + "%",
                                             fontSize = 15.sp,
@@ -376,7 +376,7 @@ fun PredictLayout(navController: NavController) {
                                             Text(
                                                 modifier = Modifier
                                                     .fillMaxWidth(),
-                                                text = max3Ind[2] + " : " + "%.2f".format(
+                                                text = insectsLabels[max3Ind[2]] as String + " : " + "%.2f".format(
                                                     max3Score[2]!! * 100
                                                 ) + "%",
                                                 fontSize = 15.sp,
