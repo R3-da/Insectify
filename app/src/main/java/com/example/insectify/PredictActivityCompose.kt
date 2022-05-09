@@ -308,8 +308,10 @@ fun PredictLayout(navController: NavController) {
                             bitmap?.let {
                                 isPredictClicked = true
                                 val resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
-
+// Creates inputs for reference.
                                 val tBuffer = TensorImage.fromBitmap(resized)
+
+// Runs model inference and gets result.
 
                                 val outputs = model2.process(tBuffer).probabilityAsCategoryList.apply {
                                     sortByDescending { it.score }
@@ -418,6 +420,7 @@ fun PredictItem(predictString : String, insectId : String) {
                 ), start = startIndex, end = endIndex
             )
 
+            // attach a string annotation that stores a URL to the text "link"
             addStringAnnotation(
                 tag = "URL",
                 annotation = "https://www.gbif.org/species/$insectId",
@@ -427,8 +430,10 @@ fun PredictItem(predictString : String, insectId : String) {
 
         }
 
+// UriHandler parse and opens URI inside AnnotatedString Item in Browse
         val uriHandler = LocalUriHandler.current
 
+// 🔥 Clickable text returns position of text that is clicked in onClick callback
         ClickableText(
             modifier = Modifier
                 .weight(1f)
