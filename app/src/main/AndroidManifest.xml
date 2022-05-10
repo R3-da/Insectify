@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.insectify">
+    package="com.reda.insectify"
+    android:installLocation="auto"
+    android:versionCode="2"
+    android:versionName="1.0.2"
+    android:targetSandboxVersion="2">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -12,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.reda.insectify.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
         <intent-filter>

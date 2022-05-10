@@ -29,11 +29,11 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.example.insectify"
+        applicationId "com.reda.insectify"
         minSdk 21
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.2"
 //        for using vector drawables
         vectorDrawables.useSupportLibrary = true
 
@@ -96,11 +96,6 @@ dependencies {
 //    splash screen new api
     implementation 'androidx.core:core-splashscreen:1.0.0-alpha02'
 
-//    compose-icons library
-//    implementation("br.com.devsrsouza.compose.icons.android:font-awesome:5.15.2")
-//    extend material icons
-//    implementation "androidx.compose.material:material-icons-extended:$compose_version"
-//    coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
 //    implement translation library
@@ -114,41 +109,15 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Dagger - Hilt
-//    implementation "com.google.dagger:hilt-android:2.38.1"
-//    annotationProcessor "com.google.dagger:hilt-android-compiler:2.38.1"
-//    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0'
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
-//    //Dagger - Hilt
-//    implementation "com.google.dagger:hilt-android:2.37"
-//    kapt "com.google.dagger:hilt-android-compiler:2.37"
-//    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
-//    kapt "androidx.hilt:hilt-compiler:1.0.0-beta01"
 
-//    // Dagger Core
-//    implementation "com.google.dagger:dagger:2.37"
-//    kapt "com.google.dagger:dagger-compiler:2.37"
-//
-//// Dagger Android
-//    api 'com.google.dagger:dagger-android:2.37'
-//    api 'com.google.dagger:dagger-android-support:2.37'
-//    kapt 'com.google.dagger:dagger-android-processor:2.37'
-//
-//// Dagger - Hilt
-//    implementation "com.google.dagger:hilt-android:2.37"
-//    kapt "com.google.dagger:hilt-android-compiler:2.37"
 
     // dagger
     implementation 'com.google.dagger:dagger:2.40.5'
     kapt 'com.google.dagger:dagger-compiler:2.40.5'
 
-// hilt
-//    implementation 'com.google.dagger:hilt-android:2.31.2-alpha'
-//    kapt 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
-//    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
-//    kaptTest 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
-//    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha01'
-//    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha01'
+
 
 //Dagger - Hilt
     implementation "com.google.dagger:hilt-android:2.40.5"
