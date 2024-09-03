@@ -27,8 +27,10 @@ fun DetailsLayout(navController: NavController) {
                         // show drawer icon
                         IconButton(
                             onClick = {
-                                navController.backQueue.clear()
-                                navController.navigate(route = Screen.PredictScreen.route)
+                                val popped = navController.popBackStack()
+                                if (!popped) {
+                                    navController.navigate(route = Screen.PredictScreen.route)
+                                }
                             }
                         ) {
                             Icon(painterResource(R.drawable.ic_baseline_arrow_back_24), contentDescription = "")

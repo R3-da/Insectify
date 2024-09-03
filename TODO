@@ -1,0 +1,3 @@
+
+Todo:
+  ☐ fix image upload denied permission when choosing image from gallery and using "allow only this time" permission (it's probably uploading an array of bitmaps instead of one bitmap because it has the possibility to select multiple images)

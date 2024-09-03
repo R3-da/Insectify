@@ -168,16 +168,18 @@ fun PredictLayout(navController: NavController) {
                                 .fillMaxSize()
                                 .clickable {
                                     if (bitmap == null) {
-                                        when (PackageManager.PERMISSION_GRANTED) {
-                                            ContextCompat.checkSelfPermission(
-                                                context, Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ) -> {
-                                                galleryLauncher.launch("image/*")
-                                            }
-                                            else -> {
-                                                isCameraSelected = false
-                                                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                            }
+                                        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                            Manifest.permission.READ_MEDIA_IMAGES
+                                        } else {
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        }
+
+
+                                        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                            galleryLauncher.launch("image/*")
+                                        } else {
+                                            isCameraSelected = false
+                                            permissionLauncher.launch(permission)
                                         }
                                     }
                                 }
@@ -224,16 +226,17 @@ fun PredictLayout(navController: NavController) {
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-                            when (PackageManager.PERMISSION_GRANTED) {
-                                ContextCompat.checkSelfPermission(
-                                    context, Manifest.permission.READ_EXTERNAL_STORAGE
-                                ) -> {
-                                    galleryLauncher.launch("image/*")
-                                }
-                                else -> {
-                                    isCameraSelected = false
-                                    permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                }
+                            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                Manifest.permission.READ_MEDIA_IMAGES
+                            } else {
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            }
+
+                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                galleryLauncher.launch("image/*")
+                            } else {
+                                isCameraSelected = false
+                                permissionLauncher.launch(permission)
                             }
                         }
                     ) {
@@ -257,16 +260,12 @@ fun PredictLayout(navController: NavController) {
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-                            when (PackageManager.PERMISSION_GRANTED) {
-                                ContextCompat.checkSelfPermission(
-                                    context, Manifest.permission.CAMERA
-                                ) -> {
-                                    cameraLauncher.launch()
-                                }
-                                else -> {
-                                    isCameraSelected = true
-                                    permissionLauncher.launch(Manifest.permission.CAMERA)
-                                }
+                            val permission = Manifest.permission.CAMERA
+                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                cameraLauncher.launch()
+                            } else {
+                                isCameraSelected = true
+                                permissionLauncher.launch(permission)
                             }
                         }
                     ) {
@@ -454,4 +453,3 @@ fun PredictItem(predictString : String, insectId : String) {
         )
     }
 }
-
