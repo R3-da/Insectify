@@ -32,11 +32,10 @@ jobs:
          
          # Step 6 - Override the version code
          -  name: Bump Version Code
-            uses: chkfung/android-version-actions@v1.2.1
+            uses: chkfung/android-version-actions@v1.2.3
             with:
-               gradlePath: app/build.gradle.kts
-        #      versionCode: ${{ github.run_number }}
-               versionCode: 1
+               gradlePath: app/build.gradle
+               versionCode: ${{ github.run_number }}
                versionName: 1.0.0
          
          # Step 7 - Build App Bundle
