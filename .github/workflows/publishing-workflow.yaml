@@ -32,15 +32,9 @@ jobs:
          
          # Step 6 - Override the version code
          -  name: Bump Version Code
-            uses: chkfung/android-version-actions@v1.2.3
+            uses: ChrisMilner/android-version-increment-action@1.0.0
             with:
-               gradlePath: app/build.gradle
-               versionCode: 3
-               versionName: 1.0.0
-
-            # uses: ChrisMilner/android-version-increment-action@1.0.0
-            # with:
-            #    name-increment-type: 'patch'  
+               name-increment-type: 'patch'  
          
          # Step 7 - Build App Bundle
          -  name: Build prodRelease
