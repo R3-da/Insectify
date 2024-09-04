@@ -2,9 +2,8 @@ name: Deployment Workflow
 on:
    workflow_dispatch:
 
-# Job 1 - Build Signed AAB
-
 jobs:
+   # Job 1 - Build Signed AAB
    build:
       name: Job 1 - Build Signed AAB
       runs-on: ubuntu-latest
