@@ -52,7 +52,7 @@ jobs:
          
          # Step 9 - Save AAB after Build job is complete to publish it as a Github release in the next job
          -  name: Upload app bundle as artifact
-            uses: actions/upload-artifact@v2
+            uses: actions/upload-artifact@v4
             with:
                name: app-bundle
                path: app/build/outputs/bundle/release/app-release.aab
@@ -69,7 +69,7 @@ jobs:
          
          # Step 1 - Download aab
          -  name: Download app bundle from artifact
-            uses: actions/download-artifact@v2
+            uses: actions/download-artifact@v4
             with:
                name: app-bundle
          
