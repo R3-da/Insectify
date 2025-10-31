@@ -10,6 +10,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.animation.AnimatedVisibility
@@ -86,8 +87,8 @@ fun PredictLayout(navController: NavController) {
         null, null, null, null, null, null, null, null, null, null
     )}
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         if (uri != null) {
             isPredictClicked = false
@@ -116,7 +117,7 @@ fun PredictLayout(navController: NavController) {
             if (isCameraSelected) {
                 cameraLauncher.launch()
             } else {
-                galleryLauncher.launch("image/*")
+                photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
         } else {
             Toast.makeText(context, "Permission Denied!", Toast.LENGTH_SHORT).show()
@@ -168,18 +169,18 @@ fun PredictLayout(navController: NavController) {
                                 .fillMaxSize()
                                 .clickable {
                                     if (bitmap == null) {
-                                        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                            Manifest.permission.READ_MEDIA_IMAGES
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                            // Launch photo picker directly
+                                            photoPickerLauncher.launch(
+                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            )
                                         } else {
-                                            Manifest.permission.READ_EXTERNAL_STORAGE
-                                        }
-
-
-                                        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-                                            galleryLauncher.launch("image/*")
-                                        } else {
-                                            isCameraSelected = false
-                                            permissionLauncher.launch(permission)
+                                            // Older Android versions: not supported
+                                            Toast.makeText(
+                                                context,
+                                                "Photo picker not supported on this device.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                                 }
@@ -226,17 +227,14 @@ fun PredictLayout(navController: NavController) {
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-                            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                Manifest.permission.READ_MEDIA_IMAGES
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                // Photo Picker supported
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
                             } else {
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            }
-
-                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-                                galleryLauncher.launch("image/*")
-                            } else {
-                                isCameraSelected = false
-                                permissionLauncher.launch(permission)
+                                // Photo Picker not available
+                                Toast.makeText(context, "Photo picker not supported on this device.", Toast.LENGTH_SHORT).show()
                             }
                         }
                     ) {
