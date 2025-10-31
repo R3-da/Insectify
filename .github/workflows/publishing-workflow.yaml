@@ -29,18 +29,34 @@ jobs:
             with:
                gradle-home-cache-cleanup: true
          
-         # Step 6 - Override the version code
+         # Step 5 - Bump Version Code and Version Name
          -  name: Bump Version Code
+            id: version
             uses: ChrisMilner/android-version-increment-action@1.0.0
             with:
-               name-increment-type: 'patch'  
-         
+               name-increment-type: 'patch'  # or 'minor' / 'major'
+
+         -  name: Sync version with AndroidManifest.xml
+            run: |
+               versionCode=$(grep "versionCode" app/build.gradle | grep -oE '[0-9]+')
+               versionName=$(grep "versionName" app/build.gradle | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+               sed -i "s/android:versionCode=\"[0-9]*\"/android:versionCode=\"${versionCode}\"/" app/src/main/AndroidManifest.xml
+               sed -i "s/android:versionName=\"[^\"]*\"/android:versionName=\"${versionName}\"/" app/src/main/AndroidManifest.xml
+
+         -  name: Commit updated versionCode/versionName
+            run: |
+               git config user.name "github-actions[bot]"
+               git config user.email "github-actions[bot]@users.noreply.github.com"
+               git add app/build.gradle app/src/main/AndroidManifest.xml
+               git commit -m "ci: bump version to ${{ steps.version.outputs.new-version-name }}"
+               git push origin HEAD:${{ github.ref }}
+
          # Step 7 - Build App Bundle
          -  name: Build prodRelease
             run: ./gradlew bundleRelease
          
          # Step 8 - Sign the AAB
-         -  name: Sign AAb
+         -  name: Sign AAB
             id: sign
             uses: r0adkll/sign-android-release@v1
             with:
