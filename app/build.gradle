@@ -43,6 +43,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        // Only include the ABIs you really need
+        ndk {
+            //noinspection ChromeOsAbiSupport
+            abiFilters 'armeabi-v7a', 'arm64-v8a'  // exclude x86 / x86_64
+        }
     }
 
     buildTypes {
@@ -52,6 +58,7 @@ android {
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -67,9 +74,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
     }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+    android {
+        // other android config...
+        packagingOptions {
+            resources {
+                // Exclude license files
+                excludes += '/META-INF/{AL2.0,LGPL2.1}'
+
+                // Exclude x86 and x86_64 native libraries
+                excludes += ['/lib/x86/*', '/lib/x86_64/*']
+            }
         }
     }
     namespace 'com.reda.insectify'
@@ -84,8 +98,9 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.4'
     implementation 'androidx.activity:activity-compose:1.9.1'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.4.4'
-    implementation 'org.tensorflow:tensorflow-lite-metadata:0.4.4'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.5.0'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.5.0'
+    implementation 'org.tensorflow:tensorflow-lite:2.17.0'  // core TFLite runtime
     implementation 'androidx.constraintlayout:constraintlayout-core:1.0.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
@@ -98,12 +113,12 @@ dependencies {
     def nav_version = '2.7.7'
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-//    splash screen new api
+    // splash screen new api
     implementation 'androidx.core:core-splashscreen:1.0.1'
 
     implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1')
 
-//    implement translation library
+    // implement translation library
     implementation 'com.zeugmasolutions.localehelper:locale-helper-android:1.5.1'
 
     // Pager and Indicators - Accompanist
@@ -116,22 +131,21 @@ dependencies {
     // Dagger - Hilt
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
 
-
-
     // dagger
     implementation 'com.google.dagger:dagger:2.52'
     kapt 'com.google.dagger:dagger-compiler:2.52'
 
-
-
-//Dagger - Hilt
+    // Dagger - Hilt
     implementation 'com.google.dagger:hilt-android:2.52'
     kapt 'com.google.dagger:hilt-android-compiler:2.52'
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     kapt 'androidx.hilt:hilt-compiler:1.2.0'
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
 
-//    Gson
+    // Gson
     implementation 'com.google.code.gson:gson:2.11.0'
 
+    // The backported Photo Picker metadata service uses:
+    implementation 'com.google.android.gms:play-services-base:18.2.0'
+    implementation 'com.google.android.gms:play-services-tasks:18.1.0'
 }
