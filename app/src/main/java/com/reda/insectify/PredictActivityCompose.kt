@@ -101,6 +101,21 @@ fun PredictLayout(navController: NavController) {
         }
     }
 
+    // Legacy photo picker for devices below API 33 (Tiramisu)
+    val legacyPhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            isPredictClicked = false
+            bitmap = if (Build.VERSION.SDK_INT < 28) {
+                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            } else {
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
+                ImageDecoder.decodeBitmap(source).copy(Bitmap.Config.ARGB_8888, true)
+            }
+        }
+    }
+
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { btm: Bitmap? ->
@@ -117,7 +132,11 @@ fun PredictLayout(navController: NavController) {
             if (isCameraSelected) {
                 cameraLauncher.launch()
             } else {
-                photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                } else {
+                    legacyPhotoPickerLauncher.launch("image/*")
+                }
             }
         } else {
             Toast.makeText(context, "Permission Denied!", Toast.LENGTH_SHORT).show()
@@ -170,17 +189,11 @@ fun PredictLayout(navController: NavController) {
                                 .clickable {
                                     if (bitmap == null) {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                            // Launch photo picker directly
                                             photoPickerLauncher.launch(
                                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                             )
                                         } else {
-                                            // Older Android versions: not supported
-                                            Toast.makeText(
-                                                context,
-                                                "Photo picker not supported on this device.",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            legacyPhotoPickerLauncher.launch("image/*")
                                         }
                                     }
                                 }
@@ -228,13 +241,11 @@ fun PredictLayout(navController: NavController) {
                             .fillMaxHeight(),
                         onClick = {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                // Photo Picker supported
                                 photoPickerLauncher.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
                             } else {
-                                // Photo Picker not available
-                                Toast.makeText(context, "Photo picker not supported on this device.", Toast.LENGTH_SHORT).show()
+                                legacyPhotoPickerLauncher.launch("image/*")
                             }
                         }
                     ) {
