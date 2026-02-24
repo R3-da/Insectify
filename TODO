@@ -4,3 +4,4 @@ Todo:
   ☐ switch to simple time tracker app github actions test, build and deployement workflow
   ☐ make the links in the details screen clickable and open the browser
   ☐ the predictions results display in a bottom sheet
+  ☐ if an image is already uploaded clicking on it would zoom in and center it on top of the screen instead of opening the gallery again
