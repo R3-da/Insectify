@@ -45,7 +45,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import com.reda.insectify.ml.Model
 import org.json.JSONObject
 import org.tensorflow.lite.support.image.TensorImage
@@ -53,9 +52,9 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun PredictLayout(navController: NavController) {
+fun PredictLayout() {
 
     val MAX_RESULTS = 20
 
@@ -101,7 +100,6 @@ fun PredictLayout(navController: NavController) {
         }
     }
 
-    // Legacy photo picker for devices below API 33 (Tiramisu)
     val legacyPhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -143,259 +141,158 @@ fun PredictLayout(navController: NavController) {
         }
     }
 
-    MaterialTheme{
-        Scaffold(
-            topBar = {
-                TopAppBar(title = {Text("Insectify")},
-                    backgroundColor = colorResource(R.color.blue_light),
-                    actions = {
-                        IconButton(onClick = {
-                            navController.navigate(route = Screen.DetailsScreen.route)
-                        }) {
-                            Icon(painterResource(R.drawable.ic_outline_info_24), contentDescription = "")
-                        }
-                    })
-                     }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .aspectRatio(1f),
+            backgroundColor = Color.White,
+            elevation = 8.dp
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clickable {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        } else {
+                            legacyPhotoPickerLauncher.launch("image/*")
+                        }
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                Spacer(
-                    modifier = Modifier.weight(0.7f)
-                )
-                Row(
-                    modifier = Modifier
-                        .weight(4f)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Card(
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier
-                            .padding(
-                                start = 40.dp,
-                                end = 40.dp,
-                                bottom = 10.dp
-                            )
-                            .aspectRatio(0.99f)
-                            .fillMaxSize(),
-                        backgroundColor = colorResource(R.color.grey),
-                        elevation = 5.dp
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clickable {
-                                    if (bitmap == null) {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                            photoPickerLauncher.launch(
-                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                            )
-                                        } else {
-                                            legacyPhotoPickerLauncher.launch("image/*")
-                                        }
-                                    }
-                                }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
-                                contentDescription = "content description",
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .alpha(0.1f)
-                                    .fillMaxSize(0.3f)
-                            )
-                        }
-
-                        bitmap?.let { it1 ->
-                            Image(
-                                contentDescription = null,
-                                bitmap = it1.asImageBitmap(),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            bottom = 10.dp
-                        )
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Button(
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(R.color.blue_light),
-                            contentColor = Color.Black
-                        ),
-                        elevation = ButtonDefaults.elevation(5.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                        onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                photoPickerLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-                            } else {
-                                legacyPhotoPickerLauncher.launch("image/*")
-                            }
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.gallery_button) + " ",
-                            fontSize = 15.sp
-                        )
+                if (bitmap == null) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_outline_photo_library_24),
-                            contentDescription = "content description"
+                            painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = colorResource(R.color.grey)
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Tap to add photo", color = colorResource(R.color.grey))
                     }
-                    Button(
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(R.color.blue_light),
-                            contentColor = Color.Black
-                        ),
-                        elevation = ButtonDefaults.elevation(5.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                        onClick = {
-                            val permission = Manifest.permission.CAMERA
-                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-                                cameraLauncher.launch()
-                            } else {
-                                isCameraSelected = true
-                                permissionLauncher.launch(permission)
-                            }
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.camera_button) + " ",
-                            fontSize = 15.sp
-                        )
-                        Icon(
-                            painter = painterResource(R.drawable.ic_outline_photo_camera_24),
-                            contentDescription = "content description"
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            bottom = 10.dp
-                        )
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Spacer(
-                        modifier = Modifier.weight(0.5f)
-                    )
-                    Button(
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = colorResource(R.color.green_harsh),
-                            contentColor = Color.Black
-                        ),
-                        elevation = ButtonDefaults.elevation(5.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                        onClick = {
-                            bitmap?.let {
-                                isPredictClicked = true
-                                val resized: Bitmap = Bitmap.createScaledBitmap(bitmap!!, 224, 224, true)
-// Creates inputs for reference.
-                                val tBuffer = TensorImage.fromBitmap(resized)
-
-// Runs model inference and gets result.
-
-                                val outputs = model.process(tBuffer).probabilityAsCategoryList.apply {
-                                    sortByDescending { it.score }
-                                }.take(MAX_RESULTS)
-
-                                for (i in 0 until MAX_RESULTS) {
-                                    max3Ind[i] = outputs[i].label
-                                    max3Score[i] = outputs[i].score
-                                }
-                            } ?: run {
-                                Toast.makeText(context, "Please upload an image !", Toast.LENGTH_SHORT).show()
-                            }
-
-
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.predict_button) + " ",
-                            fontSize = 15.sp
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier.weight(0.5f)
+                } else {
+                    Image(
+                        contentDescription = null,
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
-                Column (
-                    modifier = Modifier
-                        .weight(3.3f)
-                        .fillMaxHeight(),
-                        ) {
-                    AnimatedVisibility(
-                        visible = isPredictClicked,
-                        enter = fadeIn(animationSpec = tween(durationMillis = 500))
-                    ) {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            if (isPredictClicked) {
+            }
+        }
 
-                                var sum = 0.0f
-                                for (i in 0 until MAX_RESULTS) {
-                                    if (max3Score[i] != 0.0f) {
-                                        item {
-                                            PredictItem(
-                                                predictString = insectsLabels[max3Ind[i].toString()] as String + " : " + "%.2f".format(
-                                                    max3Score[i]!! * 100
-                                                ) + "%"
-                                            , max3Ind[i].toString())
-                                        }
-                                        sum += max3Score[i]!!.toFloat()
-                                    } else {
-                                        break
-                                    }
-                                }
-                                if (sum != 1.0f) {
+        Spacer(modifier = Modifier.height(16.dp))
 
-                                    item {
-                                        Spacer(
-                                            modifier = Modifier
-                                                .height(20.dp)
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            text = "others : " + "%.2f".format(100 - sum * 100) + "%",
-                                            fontSize = 15.sp,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.blue_light)),
+                modifier = Modifier.weight(1f).height(56.dp),
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    } else {
+                        legacyPhotoPickerLauncher.launch("image/*")
+                    }
+                }
+            ) {
+                Icon(painterResource(R.drawable.ic_outline_photo_library_24), contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = stringResource(R.string.gallery_button))
+            }
+
+            Button(
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.blue_light)),
+                modifier = Modifier.weight(1f).height(56.dp),
+                onClick = {
+                    val permission = Manifest.permission.CAMERA
+                    if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                        cameraLauncher.launch()
+                    } else {
+                        isCameraSelected = true
+                        permissionLauncher.launch(permission)
+                    }
+                }
+            ) {
+                Icon(painterResource(R.drawable.ic_outline_photo_camera_24), contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = stringResource(R.string.camera_button))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.green_harsh)),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            onClick = {
+                bitmap?.let {
+                    isPredictClicked = true
+                    val resized: Bitmap = Bitmap.createScaledBitmap(it, 224, 224, true)
+                    val tBuffer = TensorImage.fromBitmap(resized)
+                    val outputs = model.process(tBuffer).probabilityAsCategoryList.apply {
+                        sortByDescending { it.score }
+                    }.take(MAX_RESULTS)
+
+                    for (i in 0 until MAX_RESULTS) {
+                        max3Ind[i] = outputs[i].label
+                        max3Score[i] = outputs[i].score
+                    }
+                } ?: run {
+                    Toast.makeText(context, "Please upload an image!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        ) {
+            Text(text = stringResource(R.string.predict_button), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AnimatedVisibility(
+            visible = isPredictClicked,
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            modifier = Modifier.weight(1.5f)
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                var sum = 0.0f
+                for (i in 0 until MAX_RESULTS) {
+                    if (max3Score[i] != null && max3Score[i]!! > 0.01f) {
+                        item {
+                            PredictItem(
+                                predictString = "${insectsLabels[max3Ind[i].toString()]} : ${"%.2f".format(max3Score[i]!! * 100)}%",
+                                insectId = max3Ind[i].toString()
+                            )
                         }
+                        sum += max3Score[i]!!
+                    }
+                }
+                if (isPredictClicked && sum < 0.99f) {
+                    item {
+                        Text(
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                            text = "Others : ${"%.2f".format((1f - sum) * 100)}%",
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray
+                        )
                     }
                 }
             }
@@ -405,60 +302,38 @@ fun PredictLayout(navController: NavController) {
 
 @Composable
 fun PredictItem(predictString : String, insectId : String) {
+    val uriHandler = LocalUriHandler.current
+    val annotatedLinkString = buildAnnotatedString {
+        val parts = predictString.split(" : ")
+        if (parts.size == 2) {
+            val name = parts[0]
+            val score = " : " + parts[1]
+            
+            pushStyle(SpanStyle(
+                color = colorResource(R.color.blue_light),
+                fontWeight = FontWeight.Bold,
+                textDecoration = TextDecoration.Underline
+            ))
+            append(name)
+            addStringAnnotation(tag = "URL", annotation = "https://www.gbif.org/species/$insectId", start = 0, end = name.length)
+            pop()
+            append(score)
+        } else {
+            append(predictString)
+        }
+    }
 
-    Row (
+    ClickableText(
         modifier = Modifier
             .fillMaxWidth()
-            .height(30.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-            ) {
-        val annotatedLinkString: AnnotatedString = buildAnnotatedString {
-
-            val str = predictString
-            val startIndex = 0
-            val endIndex = str.indexOf(":") - 1
-            append(str)
-            addStyle(
-                style = SpanStyle(
-                    color = Color(0xff64B5F6),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    textDecoration = TextDecoration.Underline,
-                ), start = startIndex, end = endIndex
-            )
-
-            // attach a string annotation that stores a URL to the text "link"
-            addStringAnnotation(
-                tag = "URL",
-                annotation = "https://www.gbif.org/species/$insectId",
-                start = startIndex,
-                end = endIndex
-            )
-
+            .padding(vertical = 4.dp),
+        text = annotatedLinkString,
+        style = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
+        onClick = { offset ->
+            annotatedLinkString.getStringAnnotations("URL", offset, offset)
+                .firstOrNull()?.let { annotation ->
+                    uriHandler.openUri(annotation.item)
+                }
         }
-
-// UriHandler parse and opens URI inside AnnotatedString Item in Browse
-        val uriHandler = LocalUriHandler.current
-
-// 🔥 Clickable text returns position of text that is clicked in onClick callback
-        ClickableText(
-            modifier = Modifier
-                .weight(1f)
-                .padding(
-                    top = 10.dp
-                )
-                .fillMaxHeight(),
-            text = annotatedLinkString,
-            style = TextStyle(
-                textAlign = TextAlign.Center),
-            onClick = {
-                annotatedLinkString
-                    .getStringAnnotations("URL", it, it)
-                    .firstOrNull()?.let { stringAnnotation ->
-                        uriHandler.openUri(stringAnnotation.item)
-                    }
-            }
-        )
-    }
+    )
 }
