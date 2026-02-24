@@ -144,13 +144,13 @@ fun PredictLayout() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
         Card(
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .padding(horizontal = 16.dp)
                 .aspectRatio(1f),
             backgroundColor = Color.White,
             elevation = 8.dp
@@ -191,7 +191,7 @@ fun PredictLayout() {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -258,6 +258,12 @@ fun PredictLayout() {
                 }
             }
         ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_outline_magnifier),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(text = stringResource(R.string.predict_button), fontWeight = FontWeight.Bold, fontSize = 18.sp)
         }
 
@@ -266,7 +272,7 @@ fun PredictLayout() {
         AnimatedVisibility(
             visible = isPredictClicked,
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
-            modifier = Modifier.weight(1.5f)
+            modifier = Modifier.fillMaxHeight(0.5f)
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

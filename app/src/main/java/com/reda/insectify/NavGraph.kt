@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,8 +46,9 @@ fun MainScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 4.dp)
                 .padding(vertical = 8.dp)
+                .background(Color.White.copy(alpha = 0f))
         ) {
             AnimatedTopBarButton(
                 currentPage = pagerState.currentPage,
