@@ -49,8 +49,10 @@ import com.reda.insectify.ml.Model
 import org.json.JSONObject
 import org.tensorflow.lite.support.image.TensorImage
 import kotlinx.coroutines.launch
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -146,29 +148,36 @@ fun PredictLayout() {
         }
     }
 
-    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    )
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(sheetState.currentValue) {
-        if (sheetState.currentValue == ModalBottomSheetValue.Hidden) {
-            isPredictClicked = false
-        }
-    }
-
-    ModalBottomSheetLayout(
-        sheetState = sheetState,
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetPeekHeight = 64.dp,
         sheetContent = {
             Column(modifier = Modifier
-                .fillMaxHeight(0.5f)
+                .fillMaxHeight(0.7f)
                 .padding(16.dp)) {
+                // Header at top of sheet
+                Text(
+                    text = if (isPredictClicked) "Results" else "No predictions yet",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+
                 if (isPredictClicked) {
+                    val displayCount = minOf(10, MAX_RESULTS)
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         var sum = 0.0f
-                        for (i in 0 until MAX_RESULTS) {
+                        for (i in 0 until displayCount) {
                             if (max3Score[i] != null && max3Score[i]!! > 0.01f) {
                                 item {
                                     PredictItem(
@@ -179,22 +188,21 @@ fun PredictLayout() {
                                 sum += max3Score[i]!!
                             }
                         }
-                        if (isPredictClicked && sum < 0.99f) {
-                            item {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                                    text = "Others : ${"%.2f".format((1f - sum) * 100)}%",
-                                    fontSize = 15.sp,
-                                    textAlign = TextAlign.Center,
-                                    color = Color.Gray
-                                )
-                            }
+
+                        // Show Others as remaining percentage
+                        item {
+                            Text(
+                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                text = "Others : ${"%.2f".format(((1f - sum).coerceAtLeast(0f)) * 100)}%",
+                                fontSize = 15.sp,
+                                textAlign = TextAlign.Center,
+                                color = Color.Gray
+                            )
                         }
                     }
                 } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "No predictions yet", color = Color.Gray)
-                    }
+                    // empty space below header for the peek
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
@@ -317,7 +325,8 @@ fun PredictLayout() {
                         }
                     }
 
-                    scope.launch { sheetState.show() }
+                    // show the sheet to present results (sheet is dismissible)
+                    scope.launch { scaffoldState.bottomSheetState.expand() }
                 } ?: run {
                     Toast.makeText(context, "Please upload an image!", Toast.LENGTH_SHORT).show()
                 }
