@@ -3,14 +3,19 @@ package com.reda.insectify
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -97,6 +102,8 @@ fun DetailsLayout() {
 
 @Composable
 fun ListItem(icon: Int, text: String, subText: String?, isLast: Boolean = false) {
+    val uriHandler = LocalUriHandler.current
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,13 +125,7 @@ fun ListItem(icon: Int, text: String, subText: String?, isLast: Boolean = false)
                 fontWeight = FontWeight.Bold
             )
             subText?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    lineHeight = 20.sp
-                )
+                ClickableTextWithLinks(it, uriHandler)
             }
             if (!isLast) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -135,6 +136,48 @@ fun ListItem(icon: Int, text: String, subText: String?, isLast: Boolean = false)
             }
         }
     }
+}
+
+@Composable
+fun ClickableTextWithLinks(text: String, uriHandler: androidx.compose.ui.platform.UriHandler) {
+    val urlPattern = Regex("https?://[^\\s]+")
+    val annotatedString = buildAnnotatedString {
+        var lastIndex = 0
+        urlPattern.findAll(text).forEach { matchResult ->
+            val url = matchResult.value
+            append(text.substring(lastIndex, matchResult.range.first))
+            
+            pushStringAnnotation(tag = "URL", annotation = url)
+            pushStyle(SpanStyle(
+                color = colorResource(R.color.blue_light),
+                textDecoration = TextDecoration.Underline
+            ))
+            append(url)
+            pop()
+            pop()
+            
+            lastIndex = matchResult.range.last + 1
+        }
+        append(text.substring(lastIndex))
+    }
+    
+    ClickableText(
+        text = annotatedString,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(tag = "URL", start = offset, end = offset)
+                .firstOrNull()?.let { annotation ->
+                    uriHandler.openUri(annotation.item)
+                }
+        },
+        style = androidx.compose.ui.text.TextStyle(
+            fontSize = 14.sp,
+            color = Color.Gray,
+            lineHeight = 20.sp
+        )
+    )
 }
 
 @Composable
