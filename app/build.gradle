@@ -25,8 +25,8 @@ android {
         applicationId "com.reda.insectify"
         minSdk 26
         targetSdk 36
-        versionCode 7
-        versionName "1.0.7"
+        versionCode 8
+        versionName "1.0.8"
 //        for using vector drawables
         vectorDrawables.useSupportLibrary = true
 
