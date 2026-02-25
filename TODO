@@ -1,18 +1,19 @@
 
 Todo:
-  ☐ fix image upload denied permission when choosing image from gallery and using "allow only this time" permission (it's probably uploading an array of bitmaps instead of one bitmap because it has the possibility to select multiple images)
+  ✔ fix image upload denied permission when choosing image from gallery and using "allow only this time" permission (it's probably uploading an array of bitmaps instead of one bitmap because it has the possibility to select multiple images) @done(26-02-25 19:16)
   ☐ switch to simple time tracker app github actions test, build and deployement workflow
-  ☐ make the links in the details screen clickable and open the browser
-  ☐ the predictions results display in a bottom sheet
+  ✔ make the links in the details screen clickable and open the browser @done(26-02-25 19:16)
+  ✔ the predictions results display in a bottom sheet @done(26-02-25 19:16)
   ☐ if an image is already uploaded clicking on it would zoom in and center it on top of the screen instead of opening the gallery again
   ☐ status bar should be white
-  ☐ first prediction should be next to the image in a row on the top of the top of the bottom sheet
+  ✔ first prediction should be next to the image in a row on the top of the top of the bottom sheet @done(26-02-25 19:16)
   ☐ clicking on the back button from the details screen should return to the home screen instead of exiting the app
   ☐ use a better playful typeface
-  ☐ display the list of clickable predictions more nicely
+  ✔ display the list of clickable predictions more nicely @done(26-02-25 19:16)
   ☐ add a nice readme file to the github repository
   ☐ add a nice texture to the background of the app
   ☐ add appium tests for the app
   ☐ make the details and back button animation smoother at first try
   ☐ replace clickable predictions with a world icon button that open the convenient web page
   ☐ fix hardcoded gbif url in the details screen
+  ☐ fix preview image quality being very bad
