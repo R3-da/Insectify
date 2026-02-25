@@ -54,6 +54,7 @@ import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.ui.tooling.preview.Preview
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -213,12 +214,12 @@ fun PredictLayout() {
                 .padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
         Card(
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .aspectRatio(1f),
-            backgroundColor = Color.White,
+            backgroundColor = Color.LightGray,
             elevation = 8.dp
         ) {
             Box(
@@ -241,10 +242,10 @@ fun PredictLayout() {
                             painter = painterResource(R.drawable.ic_outline_add_photo_alternate_24),
                             contentDescription = null,
                             modifier = Modifier.size(64.dp),
-                            tint = colorResource(R.color.grey)
+                            tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Tap to add photo", color = colorResource(R.color.grey))
+                        Text(text = "Tap to upload an image", color = Color.Gray)
                     }
                 } else {
                     Image(
@@ -257,7 +258,7 @@ fun PredictLayout() {
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
